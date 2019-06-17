@@ -155,7 +155,7 @@ prefill_data:
     - 'user://data/test.yaml'
 ```
 
-This content of the test file in `user/data` is for example:
+The content of the test file in `user/data` is for example:
 
 ```
 var1: val1
@@ -169,7 +169,7 @@ The plugin then replaces the file reference with the file data itself.
 To prefill a form field with the value of `var2b` use this function call:
 
 ```
-data-default@: ['\Grav\Plugin\FormPrefillerPlugin::getTwig', 'prefill_data.test.var1']
+data-default@: ['\Grav\Plugin\FormPrefillerPlugin::getTwig', 'prefill_data.test.var2.var2b']
 ```
 
 Multipe files can be read by specifying a list. For more information see the [Import Plugin](https://github.com/Perlkonig/grav-plugin-import) documentation. 
