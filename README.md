@@ -31,7 +31,7 @@ Simply edit the plugin options in the Admin panel, or, if you don't use the Admi
 
 Currently there's no online demo.
 
-To demo and test the plugin you need a preferably clean Grav installation including this plugin and then use the [example form page](https://github.com/bleutzinn/grav-plugin-form-prefiller/demo/default.md) in the `demo` folder.
+To demo and test the plugin you need a preferably clean Grav installation including this plugin and then use the [example form page](https://raw.githubusercontent.com/bleutzinn/grav-plugin-form-prefiller/master/demo/default.md) in the `demo` folder.
 
 In order to experiment with language translations either the [Grav LangSwitcher Plugin](https://github.com/getgrav/grav-plugin-langswitcher) or the [Language Selector plugin with flags for Grav CMS](https://github.com/clemdesign/grav-plugin-language-selector) can be of help.
 
