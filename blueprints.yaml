@@ -1,0 +1,27 @@
+name: Form Prefiller
+version: 0.1.0
+testing: true
+description: Prefill form fields from various data sources
+icon: plug
+author:
+  name: Ron Wardenier
+  email: bleutzinn@rwgc.nl
+homepage: https://github.com/bleutzinn/grav-plugin-form-prefiller
+keywords: grav, plugin, form, prefill
+bugs: https://github.com/bleutzinn/grav-plugin-form-prefiller/issues
+docs: https://github.com/bleutzinn/grav-plugin-form-prefiller/README.md
+license: MIT
+
+form:
+  validation: strict
+  fields:
+    enabled:
+      type: toggle
+      label: PLUGIN_ADMIN.PLUGIN_STATUS
+      highlight: 1
+      default: 0
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool

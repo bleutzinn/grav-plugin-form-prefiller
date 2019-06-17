@@ -1,0 +1,13 @@
+# English
+en:
+  PLUGIN_FORM_PREFILLER:
+    DEMO_TEXTS:
+      MONKEYS: 'There are %d monkeys in the London Zoo'
+      LANG_PREFIX: 'in'
+
+# French
+fr:
+  PLUGIN_FORM_PREFILLER:
+    DEMO_TEXTS:
+      MONKEYS: 'Il y a %d singes dans le Zoo de Londres'
+      LANG_PREFIX: 'en'
