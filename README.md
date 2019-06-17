@@ -119,7 +119,18 @@ The drop down form field can then be prefilled like this:
 
 **Using Twig functions and filters**
 
-Twig can also be used in the frontmatter. For example setting this in the frontmatter:
+Twig can also be used in the frontmatter to set frontmatter variables dynamically. To do so the processing of Twig in the page frontmatter must be enabled.   
+Either set Process frontmatter Twig to On in Admin Configuration Content in the Admin panel or set
+
+```
+pages:
+    frontmatter:
+        process_twig: true
+```
+
+in the `user/config/system.yaml` configuration file to enable frontmatter Twig processing.
+
+For example setting this in the frontmatter:
 
 ```
 delivery_date: '{{ now|date_modify(''+2 day'')|date(''Y-m-d H:i'') }}'
