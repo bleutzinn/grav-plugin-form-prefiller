@@ -38,7 +38,7 @@ In order to experiment with language translations either the [Grav LangSwitcher 
 
 ## Usage
 
-### Activate the plugin
+### Activating the plugin
 
 This plugin acts only when `prefill` is in the form name, e.g.:
 
@@ -55,14 +55,20 @@ These function calls makes filling form fields with values from different source
 * `getFrontmatter` - gets the value of a variable in the page header or frontmatter.
 * `getTwig` - gets the value of a Twig variable.
 
-### Specifying variables with Dot notation
 
-A frontmatter root variable like the `title` variable in every page's frontmatter is simply specified as `page.header.title`. Nested variables like in the example file `test.yaml` need to be specified by their path in Dot notation. For example:   
-`page.header.prefill_data.test.var2.var2a`.
+### Setting default return values
 
-### Extra Twig variables
+To control the return value in case a call returns `null` a default return value may be specified as an extra parameter, for example return `42` when the variable `unknown` is missing in the page frontmatter (or is and equals to `null`):
 
-All Twig variables such as the Theme and Page variables can of course be used as usual. Additionally as an extra convenience any URL parameters, the frontmatter variables and data loaded with `prefill_data` are also made accessible as Twig variables.
+```
+data-default@: ['\Grav\Plugin\FormPrefillerPlugin::getFrontmatter', 'unknown', '42']
+```
+
+### Twig variables
+
+The plugin has access to a set of Twig variables which Grav supplies by default and can de used with `getTwig`.
+
+Additionally, as an extra convenience, the frontmatter variables, data loaded with `prefill_data` and any URL parameters are also made accessible as Twig variables as well.
 
 All can be used with the `getTwig` function by using these Dot notation prefixes:
 
@@ -70,14 +76,24 @@ All can be used with the `getTwig` function by using these Dot notation prefixes
 * `prefill_frontmatter` (acts as an alias of `page.header`)
 * `prefill_data`
 
+To see these variables set a `data-default@` property to get `@ALL`:
 
-### Using variable values
+```
+data-default@: ['\Grav\Plugin\FormPrefillerPlugin::getTwig', '@ALL' ]
+```
 
-The main purpose of the plugin is to prefill form fields with default values. For this Grav uses the `data-*@:` notation as the key, where `*` is the field name you want to fill with the result of the function call.
+This will simply dump all the accessible Twig variables to the screen and exits the plugin without any further processing.
+
+
+### Prefilling dynamic field properties
+
+The main purpose of the plugin is to prefill form fields with default values. For this Grav uses the `data-*@:` notation as the key, where `*` is the name of the dynamic field property you want to fill with the result of the function call.
+
+See the examples below how to prefill dynamic field properties.
 
 For the full explanation see the [Using Function Calls (data-*@)](https://learn.getgrav.org/16/forms/blueprints/advanced-features#using-function-calls-data-at) in the Grav documentation.
 
-#### Some examples
+### Examples
 
 **Prefill a field with a URL parameter**
 
@@ -88,6 +104,47 @@ data-default@: ['\Grav\Plugin\FormPrefillerPlugin::getParameter', 'search']
 ```
 
 Please see the remark at [Caveats](#caveats) !
+
+---
+
+**Multi language forms**
+
+Text from a language file can be used to translate labels into the current language. Combined with using Twig in the frontmatter allows for translated forms.
+
+To demonstrate this the plugin comes with this translation file `languages.yaml`:
+
+
+```
+# English
+en:
+  PLUGIN_FORM_PREFILLER:
+    DEMO_TEXTS:
+      MONKEYS: 'There are %d monkeys in the London Zoo'
+      LANG_PREFIX: 'in'
+      PIZZA_LABEL: 'Select your pizza'
+
+# French
+fr:
+  PLUGIN_FORM_PREFILLER:
+    DEMO_TEXTS:
+      MONKEYS: 'Il y a %d singes dans le Zoo de Londres'
+      LANG_PREFIX: 'en'
+      PIZZA_LABEL: 'Sélectionnez votre pizza'
+```
+
+When the variable `monkey_label` is defined in the page frontmatter as:
+`monkey_label: '{{ ''PLUGIN_FORM_PREFILLER.DEMO_TEXTS.MONKEYS''|t(12) }}'`
+
+then the label will be shown in the current language: in English: "There are 12 monkeys in the London Zoo" and en Français: "Il y a 12 singes dans le Zoo de Londres".
+
+Likewise a field label can be translated, for example:
+
+```
+data-label@: ['\Grav\Plugin\FormPrefillerPlugin::getTwig', PLUGIN_FORM_PREFILLER.DEMO_TEXTS.PIZZA_LABEL ]
+```
+
+
+Of course form fields (using `data-default@`) can be prefilled in the current language as well.
 
 ---
 
@@ -146,6 +203,40 @@ in a form field will, at noon on January 1st, 2020 result in the prefilled field
 
 ---
 
+**Prefilling a select field from a template**
+
+A `select` form field requires a list to enable the user to select one of the options.
+
+To demonstrate this the plugin comes with an example template in it's `templates/partials` directory named `pizzas.yaml.twig`:
+
+```
+{% set pizzas = {
+  'pizzas': { 0: 'Margarita', 1: 'Salami', 2: 'Rosita', 3: 'Chef Special' }
+}
+%}
+
+{# To return anything other then a string apply the filter yaml_encode #}
+{{ pizzas|yaml_encode }}
+```
+
+In order to get the list as an array two requirements must be met:
+
+1. the `yaml_encode` filter must be applied to the template output as shown below.
+2. indicate the output format of the template in the filename, in this case `pizzas.yaml.twig` (actually this is not a requirement but considered a best practice).
+
+
+```
+-
+    name: get_pizzas_from_template
+    label: 'Getting a list from a template ("pizzas.yaml.twig")'
+    type: select
+    classes: fancy
+    default: 3
+    data-options@: ['\Grav\Plugin\FormPrefillerPlugin::getTwigRender', 'pizzas.yaml.twig' ]
+```
+
+---
+
 **Loading external data**
 
 External data in YAML or JSON format can be loaded through a frontmatter variable named `prefill_data`. For example:
@@ -175,38 +266,6 @@ data-default@: ['\Grav\Plugin\FormPrefillerPlugin::getTwig', 'prefill_data.test.
 Multipe files can be read by specifying a list. For more information see the [Import Plugin](https://github.com/Perlkonig/grav-plugin-import) documentation. 
 
 
----
-
-**Multi language forms**
-
-Using Twig in the frontmatter allows for translated forms.
-
-To demonstrate this the plugin comes with this translation file `languages.yaml`:
-
-
-```
-# English
-en:
-  PLUGIN_FORM_PREFILLER:
-    DEMO_TEXTS:
-      MONKEYS: 'There are %d monkeys in the London Zoo'
-      LANG_PREFIX: 'in'
-
-# French
-fr:
-  PLUGIN_FORM_PREFILLER:
-    DEMO_TEXTS:
-      MONKEYS: 'Il y a %d singes dans le Zoo de Londres'
-      LANG_PREFIX: 'en'
-```
-
-When the variable `monkey_label` is defined in the page frontmatter as:
-`monkey_label: '{{ ''PLUGIN_FORM_PREFILLER.DEMO_TEXTS.MONKEYS''|t(12) }}'`
-
-then the label will be shown in the current language: in English: "There are 12 monkeys in the London Zoo" and en Français: "Il y a 12 singes dans le Zoo de Londres".
-
-Of course form fields can be prefilled in the current language as well.
-
 ### Using Twig variables in the page content
 
 As a kind of side effect all Twig variables can also be used in the page content by setting:
@@ -227,13 +286,8 @@ cache_enable: false
 ```
 
 
-
 ## Credits
 
 Credits go to Aaron Dalton ([Perlkonig](https://github.com/Perlkonig)) for his [Import Plugin](https://github.com/Perlkonig/grav-plugin-import) from which some code I have reused. 
 
-
-## To Do
-
-- [ ] Add custom Twig processing via Twig templates
 

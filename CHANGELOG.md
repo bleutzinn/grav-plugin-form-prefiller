@@ -1,3 +1,12 @@
+# v0.2.0
+##  06/23/2019
+
+1. [](#new)
+    * Added custom processing through Twig templates ("getTwigRender")
+    * Added a call to view all available Twig variables via `getTwig` with parameter `@ALL`
+1. [](#improved)
+    * Fixed a problem with extra Twig variables not being added
+
 # v0.1.0
 ##  06/16/2019
 
