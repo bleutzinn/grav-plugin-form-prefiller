@@ -72,7 +72,7 @@ class FormPrefillerPlugin extends Plugin
     public function onPagesInitialized()
     {
         if ($this->pluginAct()) {
-            Grav::instance()['log']->info('In onPagesInitialized()');
+            
             if (property_exists($this->grav['page']->header(), 'prefill_data')) {
 
                 $prefill_data = $this->grav['page']->header()->prefill_data;
@@ -216,7 +216,6 @@ class FormPrefillerPlugin extends Plugin
     public function getTwig($var, $default = null)
     {
         if (self::pluginAct()) {
-            Grav::instance()['log']->info('Doing a getTwig(' . $var . ')');
 
             $twig_vars = (array) Grav::instance()['twig']->twig_vars;
 
@@ -231,7 +230,7 @@ class FormPrefillerPlugin extends Plugin
                     /** @var Language $language */
                     $language = Grav::instance()['language'];
                     $value = $language->translate($var);
-                    dump($value);
+
                 } else {
                     $value = Utils::getDotNotation($twig_vars, $var);
                 }
@@ -239,7 +238,6 @@ class FormPrefillerPlugin extends Plugin
                 if($value == null) {                
                     return $default;
                 } else {
-                    Grav::instance()['log']->info('Returning: ' . $value);
                     return $value;
                 }
             }
