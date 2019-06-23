@@ -2,10 +2,9 @@
 namespace Grav\Plugin;
 
 use Grav\Common\Grav;
+use Grav\Common\Language\Language;
 use Grav\Common\Plugin;
-use Grav\Common\Uri;
 use Grav\Common\Utils;
-use RocketTheme\Toolbox\Event\Event;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -41,9 +40,10 @@ class FormPrefillerPlugin extends Plugin
     public static function getSubscribedEvents()
     {
         return [
-            'onPageInitialized' => ['onPageInitialized', 0],
+            'onPagesInitialized' => ['onPagesInitialized', 0],
             'onPluginsInitialized' => ['onPluginsInitialized', 0],
-            'onTwigSiteVariables' => ['onTwigSiteVariables', 0],
+            'onTwigVariables' => ['onTwigVariables', 0],
+            'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0],
         ];
     }
 
@@ -69,10 +69,10 @@ class FormPrefillerPlugin extends Plugin
         return $result;
     }
 
-    public function onPageInitialized()
+    public function onPagesInitialized()
     {
         if ($this->pluginAct()) {
-
+            Grav::instance()['log']->info('In onPagesInitialized()');
             if (property_exists($this->grav['page']->header(), 'prefill_data')) {
 
                 $prefill_data = $this->grav['page']->header()->prefill_data;
@@ -116,11 +116,211 @@ class FormPrefillerPlugin extends Plugin
                 // Usage: {{ page.header.prefill_data.<file>.<var-in-dot-notation> }}
                 $this->grav['page']->header()->prefill_data = $data;
 
-                // BTW This data is added as Twig variables by the onTwigSiteVariables event
-                // handler in this plugin as the Grav processing order prevents
-                // doing that here
+            }
+
+            // Add extra Twig variables to be used via `getTwig` call
+
+            // Add any URL parameters
+            $twig = Grav::instance()['twig'];
+            $params = self::getUriParams();
+            unset($twig->twig_vars['prefill_params']);
+            $twig->twig_vars['prefill_params'] = $params;
+
+            // Add page header/frontmatter
+            // Usage: {{ prefill_frontmatter.<var-in-dot-notation> }}
+            $frontmatter = (array) Grav::instance()['page']->header();
+            unset($twig->twig_vars['prefill_frontmatter']);
+            $twig->twig_vars['prefill_frontmatter'] = $frontmatter;
+
+            // Add data from external YAML or JSON file
+            // Usage: {{ prefill_data.<file>.<var-in-dot-notation> }}
+            $prefill_data = Grav::instance()['page']->header()->prefill_data;
+            unset($twig->twig_vars['prefill_data']);
+            $twig->twig_vars['prefill_data'] = $prefill_data;
+
+        }
+    }
+
+    /**
+     * Return value from page header/frontmatter
+     *
+     * To be used with the data-default@ form field option
+     * Nested variables must be requested in dot notation
+     *
+     * @param string $key
+     *
+     * @return string|null $value
+     *
+     */
+    public static function getFrontmatter($key, $default = null)
+    {
+        if (self::pluginAct()) {
+            $frontmatter = (array) Grav::instance()['page']->header();
+
+            $value = Utils::getDotNotation($frontmatter, $key);
+            
+            if($value == null) {                
+                return $default;
+            } else {
+                return $value;
+            }
+
+        } else {
+
+            return null;
+        }
+    }
+    /**
+     * Return value of specified URL parameter
+     *
+     * To be used with the data-default@ form field option
+     * Supports regular (?q=123) and Grav style (/q:123) parameters
+     *
+     * @param string $key
+     *
+     * @return string|null $value
+     *
+     */
+    public static function getParameter($key, $default = null)
+    {
+        if (self::pluginAct()) {
+
+            $params = self::getUriParams();
+
+            if (isset($params[$key])) {
+                $value = $params[$key];
+
+                if($value == null) {                
+                    return $default;
+                } else {
+                    return $value;
+                }
+
+            } else {
+
+                return null;
             }
         }
+    }
+
+    /**
+     * Return value of specified Twig variable
+     *
+     * To be used with the data-default@ form field option
+     *
+     * @param string $var
+     *
+     * @return string|null $value
+     *
+     */
+    public function getTwig($var, $default = null)
+    {
+        if (self::pluginAct()) {
+            Grav::instance()['log']->info('Doing a getTwig(' . $var . ')');
+
+            $twig_vars = (array) Grav::instance()['twig']->twig_vars;
+
+            if (strtoupper($var) == '@ALL') {
+                // Simply dump the available Twig variables and exit
+                dump($twig_vars);
+                exit;
+
+            } else { // Return requested value
+
+                if ($var == strtoupper($var)) {
+                    /** @var Language $language */
+                    $language = Grav::instance()['language'];
+                    $value = $language->translate($var);
+                    dump($value);
+                } else {
+                    $value = Utils::getDotNotation($twig_vars, $var);
+                }
+
+                if($value == null) {                
+                    return $default;
+                } else {
+                    Grav::instance()['log']->info('Returning: ' . $value);
+                    return $value;
+                }
+            }
+
+        } else {
+
+            return null;
+        }
+    }
+
+    /**
+     * Return the result of processing a Twig template
+     *
+     * @param string $template
+     * @param array $params
+     *
+     * @return mixed $value
+     *
+     */
+    public function getTwigRender($template, $params = null, $default = null)
+    {
+        if (self::pluginAct()) {
+
+            if (substr($template, -5) != '.twig') {
+                $template .= '.twig';
+            }
+
+            $twig_vars = (array) Grav::instance()['twig']->twig_vars;
+            $params = (array) $params;
+
+            // Convert Twig variables to literals
+            foreach ($params as $p_key => $param) {
+
+                preg_match_all('/{{ *(.*?) *}}/m', $param, $matches);
+                $vars = $matches[1];
+
+                foreach ($vars as $key => $var) {
+
+                    $val = Utils::getDotNotation($twig_vars, $var);
+                    $param = str_replace($matches[0][$key], $val, $param);
+                }
+                $params[$p_key] = $param;
+
+            }
+
+            // Render the template and return the result
+            $value = Grav::instance()['twig']->twig->render($template, array('params' => (array) $params));
+
+            // Check for a YAML type template (".yaml.twig")
+            $arr = explode('.', $template);
+            if (count($arr > 2)) {
+                $type = $arr[count($arr) - 2];
+
+                if (strtolower($type) == 'yaml') {
+                    // Return parsed value (could be an array)
+                    $value = YAML::parse($value);
+                }
+            }
+            
+            if($value == null) {                
+                return $default;
+            } else {
+                return $value;
+            }
+
+        } else {
+
+            return null;
+        }
+    }
+
+    /**
+     * Add current directory to twig lookup paths
+     *
+     */
+    public function onTwigTemplatePaths()
+    {
+        // Add plugin templates path
+        $this->grav['twig']->twig_paths[] = __DIR__ . '/templates';
+        $this->grav['twig']->twig_paths[] = __DIR__ . '/templates/partials';
+
     }
 
     /**
@@ -140,107 +340,6 @@ class FormPrefillerPlugin extends Plugin
         }
 
         return $path;
-    }
-
-    /**
-     * Return value from page header/frontmatter
-     *
-     * To be used with the data-default@ form field option
-     * Nested variables must be requested in dot notation
-     *
-     * @param string $key
-     *
-     * @return string|null $value
-     *
-     */
-    public static function getFrontmatter($key)
-    {
-        if (self::pluginAct()) {
-            $frontmatter = (array) Grav::instance()['page']->header();
-
-            $value = Utils::getDotNotation($frontmatter, $key);
-
-            return $value;
-        } else {
-            return null;
-        }
-    }
-    /**
-     * Return value of specified URL parameter
-     *
-     * To be used with the data-default@ form field option
-     * Supports regular (?q=123) and Grav style (/q:123) parameters
-     *
-     * @param string $key
-     *
-     * @return string|null $value
-     *
-     */
-    public static function getParameter($key)
-    {
-        if (self::pluginAct()) {
-
-            $params = self::getUriParams();
-
-            if (isset($params[$key])) {
-                $value = $params[$key];
-
-                return $value;
-            } else {
-                return null;
-            }
-        }
-    }
-
-    /**
-     * Return value of specified Twig variable
-     *
-     * To be used with the data-default@ form field option
-     *
-     * @param string $var
-     *
-     * @return string|null $value
-     *
-     */
-    public function getTwig($var)
-    {
-        if (self::pluginAct()) {
-            $twig_vars = (array) Grav::instance()['twig']->twig_vars;
-
-            $value = Utils::getDotNotation($twig_vars, $var);
-
-            return $value;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Set Twig variables
-     *
-     */
-    public function onTwigSiteVariables()
-    {
-        if (self::pluginAct()) {
-
-            // Add URI parameters
-            // Usage: {{ prefill_params.<var-in-dot-notation> }}
-            $params = $this->getUriParams();
-            unset($this->grav['twig']->twig_vars['prefill_params']);
-            $this->grav['twig']->twig_vars['prefill_params'] = $params;
-
-            // Add page header/frontmatter
-            // Usage: {{ prefill_frontmatter.<var-in-dot-notation> }}
-            $frontmatter = (array) Grav::instance()['page']->header();
-            unset($this->grav['twig']->twig_vars['prefill_frontmatter']);
-            $this->grav['twig']->twig_vars['prefill_frontmatter'] = $frontmatter;
-
-            // Add data from external YAML or JSON file
-            // Usage: {{ prefill_data.<file>.<var-in-dot-notation> }}
-            $prefill_data = $this->grav['page']->header()->prefill_data;
-            unset($this->grav['twig']->twig_vars['prefill_data']);
-            $this->grav['twig']->twig_vars['prefill_data'] = $prefill_data;
-        }
     }
 
     /**
