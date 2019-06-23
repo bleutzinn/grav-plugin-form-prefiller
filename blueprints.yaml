@@ -1,6 +1,6 @@
 name: Form Prefiller
-version: 0.2.0
-testing: true
+version: 1.0.0
+testing: false
 description: Prefill form fields from various data sources
 icon: plug
 author:

@@ -1,3 +1,10 @@
+# v1.0.0
+##  06/23/2019
+
+1. [](#improved)
+    * Updated documentation in `README.md`
+    * Included more complete demo page
+
 # v0.2.0
 ##  06/23/2019
 
