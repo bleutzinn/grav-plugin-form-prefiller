@@ -4,6 +4,8 @@ en:
     DEMO_TEXTS:
       MONKEYS: 'There are %d monkeys in the London Zoo'
       LANG_PREFIX: 'in'
+      PAGE_HEADER: 'Page content showing variable values'
+      FORM_HEADER: 'Prefilled Form'
       PIZZA_LABEL: 'Select your pizza'
 
 # French
@@ -12,4 +14,6 @@ fr:
     DEMO_TEXTS:
       MONKEYS: 'Il y a %d singes dans le Zoo de Londres'
       LANG_PREFIX: 'en'
+      PAGE_HEADER: 'Contenu de la page affichant les valeurs des variables'
+      FORM_HEADER: 'Formulaire pré-rempli'
       PIZZA_LABEL: 'Sélectionnez votre pizza'
