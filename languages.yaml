@@ -4,6 +4,7 @@ en:
     DEMO_TEXTS:
       MONKEYS: 'There are %d monkeys in the London Zoo'
       LANG_PREFIX: 'in'
+      PIZZA_LABEL: 'Select your pizza'
 
 # French
 fr:
@@ -11,3 +12,4 @@ fr:
     DEMO_TEXTS:
       MONKEYS: 'Il y a %d singes dans le Zoo de Londres'
       LANG_PREFIX: 'en'
+      PIZZA_LABEL: 'Sélectionnez votre pizza'
