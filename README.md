@@ -1,3 +1,5 @@
+<!-- $theme: gaia -->
+
 # Form Prefiller Plugin
 
 The **Form Prefiller** Plugin is for [Grav CMS](http://github.com/getgrav/grav). It's purpose is to make prefilling form fields easier.
@@ -54,6 +56,7 @@ These function calls makes filling form fields with values from different source
 * `getParameter` - gets a URL parameter value in either regular (?q=123) or Grav format (/q:123). If a parameter is specified in both formats the Grav formatted one gets precedence.
 * `getFrontmatter` - gets the value of a variable in the page header or frontmatter.
 * `getTwig` - gets the value of a Twig variable.
+* `getTwigRender` - gets a result from processing parameters via a custom Twig template.
 
 
 ### Setting default return values
@@ -129,13 +132,13 @@ fr:
     DEMO_TEXTS:
       MONKEYS: 'Il y a %d singes dans le Zoo de Londres'
       LANG_PREFIX: 'en'
-      PIZZA_LABEL: 'Sélectionnez votre pizza'
+      PIZZA_LABEL: 'SÃ©lectionnez votre pizza'
 ```
 
 When the variable `monkey_label` is defined in the page frontmatter as:
 `monkey_label: '{{ ''PLUGIN_FORM_PREFILLER.DEMO_TEXTS.MONKEYS''|t(12) }}'`
 
-then the label will be shown in the current language: in English: "There are 12 monkeys in the London Zoo" and en Français: "Il y a 12 singes dans le Zoo de Londres".
+then the label will be shown in the current language: in English: "There are 12 monkeys in the London Zoo" and en FranÃ§ais: "Il y a 12 singes dans le Zoo de Londres".
 
 Likewise a field label can be translated, for example:
 
