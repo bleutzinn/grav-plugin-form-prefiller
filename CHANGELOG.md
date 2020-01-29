@@ -1,3 +1,9 @@
+# v1.0.1
+##  01/29/2020
+
+1. [](#improved)
+    * Corrected the link to the `README.md` file in `blueprints.yaml` file.
+
 # v1.0.0
 ##  06/23/2019
 

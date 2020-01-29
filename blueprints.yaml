@@ -1,5 +1,5 @@
 name: Form Prefiller
-version: 1.0.0
+version: 1.0.1
 testing: false
 description: Prefill form fields from various data sources
 icon: plug
@@ -9,7 +9,7 @@ author:
 homepage: https://github.com/bleutzinn/grav-plugin-form-prefiller
 keywords: grav, plugin, form, prefill
 bugs: https://github.com/bleutzinn/grav-plugin-form-prefiller/issues
-docs: https://github.com/bleutzinn/grav-plugin-form-prefiller/README.md
+docs: https://github.com/bleutzinn/grav-plugin-form-prefiller/blob/master/README.md
 license: MIT
 
 form:
