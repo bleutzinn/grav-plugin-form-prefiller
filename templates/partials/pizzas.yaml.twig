@@ -1,7 +1,11 @@
+{# Set suitable data structure for the form field type #}
+{# In this example a numeric array #}
 {% set pizzas = {
-  'pizzas': { 0: 'Margarita', 1: 'Salami', 2: 'Rosita', 3: 'Chef Special' }
-}
-%}
+  0: 'Margarita',
+  1: 'Salami',
+  2: 'Rosita',
+  3: 'Chef Special'
+} %}
 
 {# To return anything other then a string apply the filter yaml_encode #}
 {{ pizzas|yaml_encode }}
