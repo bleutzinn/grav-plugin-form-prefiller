@@ -37,24 +37,11 @@ To demo and test the plugin you need a preferably clean Grav installation includ
 
 In order to experiment with language translations either the [Grav LangSwitcher Plugin](https://github.com/getgrav/grav-plugin-langswitcher) or the [Language Selector plugin with flags for Grav CMS](https://github.com/clemdesign/grav-plugin-language-selector) can be of help.
 
+## Required system and page configuration
 
-## Usage
+To get the most out of this plugin a couple of system and page configuration settings are required.
 
-### Activating the plugin
-
-This plugin acts only when `prefill` is in the form name, e.g.:
-
-```
-form:
-    name: addpage.prefill.order_form
-```
-
-### Required system and page configuration settings
-
-To make the most of this plugin a couple of system and page configuration settings are required.
-
-1) The processing of Twig in the page frontmatter must be enabled.   
-Either set `Process frontmatter Twig` to `On` in the Content section of the System Configuration in the Admin Plugin or set
+1) The processing of Twig in the page frontmatter should be enabled. To do this either set `Process frontmatter Twig` to `On` in the Content section of the System Configuration in the Admin Plugin or enable it in the `user/config/system.yaml` configuration file:
 
 ```
 pages:
@@ -62,9 +49,7 @@ pages:
         process_twig: true
 ```
 
-in the `user/config/system.yaml` configuration file.
-
-2) Using Twig variables in field labels (and in the page content if desired)requires setting `process.twig: true` in the page frontmatter.
+2) Using Twig variables in field labels (and in the page content if desired) requires setting `process.twig: true` in the page frontmatter.
 
 3) To prevent the use of old cached values the page should be excluded from the Grav cache.
 
@@ -76,7 +61,8 @@ process:
     twig: true
 ```
 
-3) To prevent the use of old cached values the page should be excluded from the Grav cache: 
+
+## Usage
 
 
 ### Available Function Calls (data-*@)
