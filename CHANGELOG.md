@@ -1,3 +1,9 @@
+# v1.1.2
+##  05/02/2020
+
+1. [](#improved)
+    * Updated documentation
+    
 # v1.1.1
 ##  05/02/2020
 
