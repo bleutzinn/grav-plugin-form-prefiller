@@ -13,6 +13,8 @@ use Symfony\Component\Yaml\Yaml;
  */
 class FormPrefillerPlugin extends Plugin
 {
+    // Store current page
+    protected static $page;
 
     /**
      * Initialize the plugin
@@ -40,6 +42,7 @@ class FormPrefillerPlugin extends Plugin
     public static function getSubscribedEvents()
     {
         return [
+            'onPageInitialized' => ['onPageInitialized', 0],
             'onPagesInitialized' => ['onPagesInitialized', 0],
             'onPluginsInitialized' => ['onPluginsInitialized', 0],
             'onTwigVariables' => ['onTwigVariables', 0],
@@ -57,7 +60,7 @@ class FormPrefillerPlugin extends Plugin
      */
     public static function pluginAct()
     {
-        $frontmatter = (array) Grav::instance()['page']->header();
+        $frontmatter = (array) self::$page->header();
         $result = false;
 
         if (isset($frontmatter['form']['name'])) {
@@ -69,54 +72,57 @@ class FormPrefillerPlugin extends Plugin
         return $result;
     }
 
+    public function onPageInitialized($event)
+    {
+        self::$page = $event['page'];
+    }
+
     public function onPagesInitialized()
     {
-        if ($this->pluginAct()) {
-            
-            if (property_exists($this->grav['page']->header(), 'prefill_data')) {
+        //if (!isset(self::$page)) {
+        //    return null;
+        //}
 
-                $prefill_data = $this->grav['page']->header()->prefill_data;
-                $data = [];
+        if (property_exists($this->grav['page']->header(), 'prefill_data')) {
 
-                if (is_array($prefill_data)) {
-                    foreach ($prefill_data as $file) {
+            $prefill_data = $this->grav['page']->header()->prefill_data;
+            $data = [];
 
-                        if (file_exists($this->getFilePath($file))) {
-                            $type = pathinfo($file)['extension'];
-                            $key = basename($file, '.' . $type);
-
-                            switch ($type) {
-                                case 'yaml':
-                                    $data[$key] = Yaml::parse(file_get_contents($file));
-                                    break;
-                                case 'json':
-                                    $data[$key] = json_decode(file_get_contents($file), true);
-                                    break;
-                            }
-                        }
-                    }
-                } else {
-                    $file = $prefill_data;
-
+            if (is_array($prefill_data)) {
+                foreach ($prefill_data as $file) {
                     if (file_exists($this->getFilePath($file))) {
                         $type = pathinfo($file)['extension'];
+                        $key = basename($file, '.' . $type);
 
                         switch ($type) {
                             case 'yaml':
-                                $data = Yaml::parse(file_get_contents($file));
+                                $data[$key] = Yaml::parse(file_get_contents($file));
                                 break;
                             case 'json':
-                                $data = json_decode(file_get_contents($file), true);
+                                $data[$key] = json_decode(file_get_contents($file), true);
                                 break;
                         }
                     }
                 }
+            } else {
+                $file = $prefill_data;
+                if (file_exists($this->getFilePath($file))) {
+                    $type = pathinfo($file)['extension'];
 
-                // Add data to page header/frontmatter
-                // Usage: {{ page.header.prefill_data.<file>.<var-in-dot-notation> }}
-                $this->grav['page']->header()->prefill_data = $data;
-
+                    switch ($type) {
+                        case 'yaml':
+                            $data = Yaml::parse(file_get_contents($file));
+                            break;
+                        case 'json':
+                            $data = json_decode(file_get_contents($file), true);
+                            break;
+                    }
+                }
             }
+            
+            // Add data to page header/frontmatter
+            // Usage: {{ page.header.prefill_data.<file>.<var-in-dot-notation> }}
+            $this->grav['page']->header()->prefill_data = $data;
 
             // Add extra Twig variables to be used via `getTwig` call
 
@@ -154,20 +160,18 @@ class FormPrefillerPlugin extends Plugin
      */
     public static function getFrontmatter($key, $default = null)
     {
-        if (self::pluginAct()) {
-            $frontmatter = (array) Grav::instance()['page']->header();
-
-            $value = Utils::getDotNotation($frontmatter, $key);
-            
-            if($value == null) {                
-                return $default;
-            } else {
-                return $value;
-            }
-
-        } else {
-
+        if (!isset(self::$page)) {
             return null;
+        }
+
+        $frontmatter = (array) self::$page->header();
+
+        $value = Utils::getDotNotation($frontmatter, $key);
+
+        if ($value == null) {
+            return $default;
+        } else {
+            return $value;
         }
     }
     /**
@@ -183,23 +187,20 @@ class FormPrefillerPlugin extends Plugin
      */
     public static function getParameter($key, $default = null)
     {
-        if (self::pluginAct()) {
+        $params = self::getUriParams();
 
-            $params = self::getUriParams();
+        if (isset($params[$key])) {
+            $value = $params[$key];
 
-            if (isset($params[$key])) {
-                $value = $params[$key];
-
-                if($value == null) {                
-                    return $default;
-                } else {
-                    return $value;
-                }
-
+            if ($value == null) {
+                return $default;
             } else {
-
-                return null;
+                return $value;
             }
+
+        } else {
+
+            return null;
         }
     }
 
@@ -215,36 +216,22 @@ class FormPrefillerPlugin extends Plugin
      */
     public function getTwig($var, $default = null)
     {
-        if (self::pluginAct()) {
-
-            $twig_vars = (array) Grav::instance()['twig']->twig_vars;
-
-            if (strtoupper($var) == '@ALL') {
-                // Simply dump the available Twig variables and exit
-                dump($twig_vars);
-                exit;
-
-            } else { // Return requested value
-
-                if ($var == strtoupper($var)) {
-                    /** @var Language $language */
-                    $language = Grav::instance()['language'];
-                    $value = $language->translate($var);
-
-                } else {
-                    $value = Utils::getDotNotation($twig_vars, $var);
-                }
-
-                if($value == null) {                
-                    return $default;
-                } else {
-                    return $value;
-                }
-            }
+        $twig_vars = (array) Grav::instance()['twig']->twig_vars;
+        
+        // Return requested value
+        if ($var == strtoupper($var)) {
+            /** @var Language $language */
+            $language = Grav::instance()['language'];
+            $value = $language->translate($var);
 
         } else {
+            $value = Utils::getDotNotation($twig_vars, $var);
+        }
 
-            return null;
+        if ($value == null) {
+            return $default;
+        } else {
+            return $value;
         }
     }
 
@@ -259,53 +246,50 @@ class FormPrefillerPlugin extends Plugin
      */
     public function getTwigRender($template, $params = null, $default = null)
     {
-        if (self::pluginAct()) {
-
-            if (substr($template, -5) != '.twig') {
-                $template .= '.twig';
-            }
-
-            $twig_vars = (array) Grav::instance()['twig']->twig_vars;
-            $params = (array) $params;
-
-            // Convert Twig variables to literals
-            foreach ($params as $p_key => $param) {
-
-                preg_match_all('/{{ *(.*?) *}}/m', $param, $matches);
-                $vars = $matches[1];
-
-                foreach ($vars as $key => $var) {
-
-                    $val = Utils::getDotNotation($twig_vars, $var);
-                    $param = str_replace($matches[0][$key], $val, $param);
-                }
-                $params[$p_key] = $param;
-
-            }
-
-            // Render the template and return the result
-            $value = Grav::instance()['twig']->twig->render($template, array('params' => (array) $params));
-
-            // Check for a YAML type template (".yaml.twig")
-            $arr = explode('.', $template);
-            if (count($arr > 2)) {
-                $type = $arr[count($arr) - 2];
-
-                if (strtolower($type) == 'yaml') {
-                    // Return parsed value (could be an array)
-                    $value = YAML::parse($value);
-                }
-            }
-            
-            if($value == null) {                
-                return $default;
-            } else {
-                return $value;
-            }
-
-        } else {
-
+        if (!isset(self::$page)) {
             return null;
+        }
+
+        if (pathinfo($template, PATHINFO_EXTENSION) != 'twig') {
+            $template .= '.twig';
+        }
+
+        $twig_vars = (array) Grav::instance()['twig']->twig_vars;
+
+        $params = (array) $params;
+
+        // Convert Twig variables to literals
+        foreach ($params as $p_key => $param) {
+
+            preg_match_all('/{{ *(.*?) *}}/m', $param, $matches);
+            $vars = $matches[1];
+
+            foreach ($vars as $key => $var) {
+
+                $val = Utils::getDotNotation($twig_vars, $var);
+                $param = str_replace($matches[0][$key], $val, $param);
+            }
+            $params[$p_key] = $param;
+
+        }
+        // Render the template and return the result
+        $value = Grav::instance()['twig']->twig->render($template, array('params' => (array) $params));
+
+        // Check for a YAML type template (".yaml.twig")
+        $arr = explode('.', $template);
+        if (count($arr > 2)) {
+            $type = $arr[count($arr) - 2];
+
+            if (strtolower($type) == 'yaml') {
+                // Return parsed value (could be an array)
+                $value = YAML::parse($value);
+            }
+        }
+
+        if ($value == null) {
+            return $default;
+        } else {
+            return $value;
         }
     }
 
