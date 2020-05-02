@@ -25,14 +25,14 @@ form:
     fields:
         -
             name: data_fixed
-            label: 'data fixed'
+            label: 'Data fixed from frontmatter'
             type: text
             data-default@:
                 - '\Grav\Plugin\FormPrefillerPlugin::getFrontmatter'
                 - prefill_fixed_data.fix_var2.fix_var2a
         -
             name: data_file
-            label: 'data from file'
+            label: 'Data from external file (`/user/data/test.yaml`)'
             type: text
             data-default@:
                 - '\Grav\Plugin\FormPrefillerPlugin::getTwig'
@@ -47,7 +47,7 @@ form:
                 - '42'
         -
             name: site_description
-            label: 'Meta description from site config in dotnotation (Twig): site.metadata.description)'
+            label: 'Meta description from site config in dot notation (Twig)  `site.metadata.description`)'
             type: text
             data-default@:
                 - '\Grav\Plugin\FormPrefillerPlugin::getTwig'
@@ -64,23 +64,23 @@ form:
                     - 'reversed text'
         -
             name: get_pizzas_from_template
-            label: 'Getting a list from a template ("pizzas.yaml.twig")'
+            label: 'Getting a list from a Twig template ("pizzas.yaml.twig")'
             type: select
             classes: fancy
-            default: 3
+            default: 0
             data-options@:
                 - '\Grav\Plugin\FormPrefillerPlugin::getTwigRender'
                 - pizzas.yaml.twig
         -
             name: do_action
-            label: 'Action (passed as a URL parameter)'
+            label: 'Action parameter value (if present in URL)'
             type: text
             data-default@:
                 - '\Grav\Plugin\FormPrefillerPlugin::getParameter'
                 - action
         -
             name: email
-            label: 'Your email address (requires a logged in user!)'
+            label: 'Your email address (requires a logged in frontend user!)'
             type: text
             data-default@:
                 - '\Grav\Plugin\FormPrefillerPlugin::getFrontmatter'
@@ -107,7 +107,7 @@ form:
                 - delivery_date
         -
             name: content
-            label: 'Any other requests'
+            label: 'Any other requests (a not pre filled field)'
             type: textarea
             size: long
         -
@@ -122,37 +122,4 @@ form:
             redirect: /
 ---
 
-# {{ 'PLUGIN_FORM_PREFILLER.DEMO_TEXTS.PAGE_HEADER'|t }}
-
-Logged in user email: {{ grav.user.email }}
-
-var2.var2a = {{ page.header.prefill_data.test.var2.var2a }}
-
-File test via Twig vars: {{ prefill_data.test.var2.var2a }}
-
-Fixed data vars:   
-fix_var2.fix_var2b = {{ page.header.prefill_fixed_data.fix_var2.fix_var2b }}
-
-Loaded external data: {{ page.header.prefill_data.test|json_encode(constant('JSON_PRETTY_PRINT')) }}
-
-Translated sentence: {{ 'PLUGIN_FORM_PREFILLER.DEMO_TEXTS.LANG_PREFIX'|t|capitalize }}
-
-French: {{ ["PLUGIN_FORM_PREFILLER.DEMO_TEXTS.MONKEYS", 12, 'Zoo de Londres']|tl(['fr']) }} !
-
-Value of 'room_nr' from frontmatter: {{ page.header.room_nr }}
-
-Value of 'room_nr' from Twig prefill_frontmatter: {{ prefill_frontmatter.room_nr }}
-
-Today's date: {{ now|date('Y-m-d H:i') }}
-
-Delivery date straight from frontmatter: {{ page.header.delivery_date }}
-
-Delivery date from Twig prefill_frontmatter: {{ prefill_frontmatter.delivery_date }}
-
-Meta description: {{ site.metadata.description }}
-
-HTML Lang = {{ html_lang }}
-
-action via URL parameter = {{ prefill_params.action }}
-
-## {{ 'PLUGIN_FORM_PREFILLER.DEMO_TEXTS.FORM_HEADER'|t }}
+# {{ 'PLUGIN_FORM_PREFILLER.DEMO_TEXTS.FORM_HEADER'|t }}

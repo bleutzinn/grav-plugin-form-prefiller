@@ -49,6 +49,36 @@ form:
     name: addpage.prefill.order_form
 ```
 
+### Required system and page configuration settings
+
+To make the most of this plugin a couple of system and page configuration settings are required.
+
+1) The processing of Twig in the page frontmatter must be enabled.   
+Either set `Process frontmatter Twig` to `On` in the Content section of the System Configuration in the Admin Plugin or set
+
+```
+pages:
+    frontmatter:
+        process_twig: true
+```
+
+in the `user/config/system.yaml` configuration file.
+
+2) Using Twig variables in field labels (and in the page content if desired)requires setting `process.twig: true` in the page frontmatter.
+
+3) To prevent the use of old cached values the page should be excluded from the Grav cache.
+
+To meet requirements 2 and 3 the form page frontmatter must include these lines:
+
+```
+cache_enable: false
+process:
+    twig: true
+```
+
+3) To prevent the use of old cached values the page should be excluded from the Grav cache: 
+
+
 ### Available Function Calls (data-*@)
 
 These function calls make filling form fields with values from different sources easy:
@@ -69,28 +99,14 @@ data-default@: ['\Grav\Plugin\FormPrefillerPlugin::getFrontmatter', 'the_answer_
 
 ### Twig variables
 
-The plugin has access to a set of Twig variables which Grav supplies by default and can de used with `getTwig`.
-
-Additionally, as an extra convenience, the frontmatter variables, data loaded with `prefill_data` and any URL parameters are also made accessible as Twig variables as well.
+All frontmatter variables, any data loaded via `prefill_data` and any URL parameters are accessible as Twig variables.
 
 All can be used with the `getTwig` function by using these Dot notation prefixes:
 
-* `prefill_params`
-* `prefill_frontmatter` (acts as an alias of `page.header`)
-* `prefill_data`
+* `prefill_frontmatter` for frontmatter variables
+* `prefill_data` for data loaded from an external file/*
+* `prefill_params` for URL parameters
 
-
-### Using Twig variables in the page content
-
-To use Twig variables in field labels rquires setting `process.twig: true` in the page frontmatter:
-
-```
-process:
-    twig: true
-```
-
-As a kind of bonus all Twig variables can then also be used in the page content.   
-For examples see the example form page in the demo folder.
 
 ### Prefilling dynamic field properties
 
@@ -99,6 +115,7 @@ The main purpose of the plugin is to prefill form fields with default values. Fo
 See the examples below how to prefill dynamic field properties.
 
 For the full explanation see the [Using Function Calls (data-*@)](https://learn.getgrav.org/16/forms/blueprints/advanced-features#using-function-calls-data-at) in the Grav documentation.
+
 
 ### Examples
 
@@ -109,16 +126,6 @@ Given this URL: `https://example.com/search?query=%40` (regular format) or `http
 ```
 data-default@: ['\Grav\Plugin\FormPrefillerPlugin::getParameter', 'search']
 ```
-
----
-
-**Multi language forms**
-
-Text from a language file can be used to translate labels into the current language. Combined with using Twig in the frontmatter allows for translated forms.
-
-To demonstrate this the plugin comes with a translation file `languages.yaml`
-
-Please look at the examples in the demo page.
 
 ---
 
@@ -150,18 +157,27 @@ The drop down form field can then be prefilled like this:
 
 ---
 
+**Multi language forms**
+
+Text from a language file can be used to translate labels into the current language. All that is required is to change:
+
+```
+label: Select your Pizza
+```
+
+into:
+
+```
+data-label@:
+    - '\Grav\Plugin\FormPrefillerPlugin::getTwig'
+    - PLUGIN_FORM_PREFILLER.DEMO_TEXTS.PIZZA_LABEL
+```
+
+---
+
 **Using Twig functions and filters**
 
-Twig can also be used in the frontmatter to set frontmatter variables dynamically. To do so the processing of Twig in the page frontmatter must be enabled.   
-Either set Process frontmatter Twig to On in Admin Configuration Content in the Admin panel or set
-
-```
-pages:
-    frontmatter:
-        process_twig: true
-```
-
-in the `user/config/system.yaml` configuration file to enable frontmatter Twig processing.
+Twig can also be used in the frontmatter to set frontmatter variables dynamically. 
 
 For example setting this in the frontmatter:
 

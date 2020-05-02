@@ -4,17 +4,13 @@
 cn:
   PLUGIN_FORM_PREFILLER:
     DEMO_TEXTS:
-      MONKEYS: '有%d只猴子在%s'
-      PAGE_HEADER: '页面内容显示变量值'
       FORM_HEADER: '预填表格'
       PIZZA_LABEL: '选择你的比萨饼'
 
-# german
+# German
 de:
   PLUGIN_FORM_PREFILLER:
     DEMO_TEXTS:
-      MONKEYS: 'Es gibt %d Affen in der %s'
-      PAGE_HEADER: 'Seiteninhalt zeigt Variablenwerte'
       FORM_HEADER: 'Vorgefülltes Formular'
       PIZZA_LABEL: 'Wählen Sie Ihre Pizza'
 
@@ -22,17 +18,13 @@ de:
 en:
   PLUGIN_FORM_PREFILLER:
     DEMO_TEXTS:
-      MONKEYS: 'There are %d monkeys in the %s'
-      PAGE_HEADER: 'Page content showing variable values'
       FORM_HEADER: 'Prefilled Form'
       PIZZA_LABEL: 'Select your pizza'
 
 # Spanish
 es:
   PLUGIN_FORM_PREFILLER:
-    TEXTOS DE DEMOSTRACIÓN:
-      MONOS: 'Hay %d monos en las %s'
-      PAGE_HEADER: 'Contenido de la página que muestra los valores de las variables'
+    DEMO_TEXTS:
       FORM_HEADER: 'Formulario pre-rellenado'
       PIZZA_LABEL: 'Selecciona tu pizza'
 
@@ -40,8 +32,6 @@ es:
 fr:
   PLUGIN_FORM_PREFILLER:
     DEMO_TEXTS:
-      MONKEYS: 'Il y a %d singes dans le %s'
-      PAGE_HEADER: 'Contenu de la page affichant les valeurs des variables'
       FORM_HEADER: 'Formulaire pré-rempli'
       PIZZA_LABEL: 'Sélectionnez votre pizza'
 
@@ -49,8 +39,6 @@ fr:
 it:
   PLUGIN_FORM_PREFILLER:
     DEMO_TEXTS:
-      MONKEYS: 'Ci sono %d scimmie nello %s'
-      PAGE_HEADER: 'Contenuto della pagina che mostra i valori delle variabili'
       FORM_HEADER: 'Modulo precompilato'
       PIZZA_LABEL: 'Scegli la tua pizza'
 
@@ -58,23 +46,17 @@ it:
 nl:
   PLUGIN_FORM_PREFILLER:
     DEMO_TEXTS:
-      MONKEYS: 'Er zijn %d apen in de %s'
-      PAGE_HEADER: 'Pagina-inhoud met variabele waarden'
       FORM_HEADER: 'Vooraf ingevuld formulier'
       PIZZA_LABEL: 'Selecteer uw pizza'
 
 pt:
   PLUGIN_FORM_PREFILLER:
     DEMO_TEXTS:
-      MONKEYS: 'Existem %d macacos nas %s'
-      PAGE_HEADER: 'Conteúdo da página com valores de variáveis'
-      FORMULÁRIO_CIDENTE: 'Formulário pré-preenchido'
+      FORM_HEADER: 'Formulário pré-preenchido'
       PIZZA_LABEL: 'Seleccione a sua pizza'
 
 ru:
   PLUGIN_FORM_PREFILLER:
     DEMO_TEXTS:
-      MONKEYS: 'В %s есть обезьяны %d'
-      PAGE_HEADER: 'Содержимое страницы, показывающее значения переменных'
       FORM_HEADER: 'Предварительно заполненная форма'
       PIZZA_LABEL: 'Выберите пиццу'
