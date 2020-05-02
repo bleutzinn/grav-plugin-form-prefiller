@@ -1,3 +1,11 @@
+# v1.1.1
+##  05/02/2020
+
+1. [](#bugfix)
+    * Fixed a problem in detecting YAML type templates.
+1. [](#improved)
+    * Restricted examples to form fields only.
+    
 # v1.1.0
 ##  05/02/2020
 
