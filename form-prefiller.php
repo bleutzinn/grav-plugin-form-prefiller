@@ -276,14 +276,9 @@ class FormPrefillerPlugin extends Plugin
         $value = Grav::instance()['twig']->twig->render($template, array('params' => (array) $params));
 
         // Check for a YAML type template (".yaml.twig")
-        $arr = explode('.', $template);
-        if (count($arr > 2)) {
-            $type = $arr[count($arr) - 2];
-
-            if (strtolower($type) == 'yaml') {
-                // Return parsed value (could be an array)
-                $value = YAML::parse($value);
-            }
+        if (strpos(strtolower($template), '.yaml.twig') !== false) {
+            // Return parsed value (could be an array)
+            $value = YAML::parse($value);
         }
 
         if ($value == null) {
