@@ -1,3 +1,12 @@
+# v1.1.0
+##  05/02/2020
+
+1. [](#bugfix)
+    * Fixed issue [#2](https://github.com/bleutzinn/grav-plugin-form-prefiller/issues/2) about an error when 'prefill_data' was missing in the frontmatter; thanks to [thekenshow](https://github.com/thekenshow) for reporting an the fix.
+    * Fixed a problem causing a Page not found error immediately after a page save.
+1. [](#improved)
+    * Improved errors in and inconsistencies between the provided example files and the documentation.
+    
 # v1.0.1
 ##  01/29/2020
 
