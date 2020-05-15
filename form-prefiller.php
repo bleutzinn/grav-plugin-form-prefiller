@@ -1,6 +1,7 @@
 <?php
 namespace Grav\Plugin;
 
+use Composer\Autoload\ClassLoader;
 use Grav\Common\Grav;
 use Grav\Common\Language\Language;
 use Grav\Common\Plugin;
@@ -17,71 +18,66 @@ class FormPrefillerPlugin extends Plugin
     protected static $page;
 
     /**
-     * Initialize the plugin
+     * @return array
      *
+     * The getSubscribedEvents() gives the core a list of events
+     *     that the plugin wants to listen to. The key of each
+     *     array section is the event that the plugin listens to
+     *     and the value (in the form of an array) contains the
+     *     callable (or function) as well as the priority. The
+     *     higher the number the higher the priority.
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            'onPluginsInitialized' => [
+                ['autoload', 100000], // TODO: Remove when plugin requires Grav >=1.7
+                ['onPluginsInitialized', 0]
+            ]
+        ];
+    }
+
+    /**
+    * Composer autoload.
+    *is
+    * @return ClassLoader
+    */
+    public function autoload(): ClassLoader
+    {
+        return require __DIR__ . '/vendor/autoload.php';
+    }
+
+    /**
+     * Initialize the plugin
      */
     public function onPluginsInitialized()
     {
         // Don't proceed if we are in the admin plugin
         if ($this->isAdmin()) {
             return;
-        };
-
-    }
-
-    /**
-     *  The getSubscribedEvents() gives the core a list of events
-     *     that the plugin wants to listen to. The key of each
-     *     array section is the event that the plugin listens to
-     *     and the value (in the form of an array) contains the
-     *     callable (or function) as well as the priority. The
-     *     higher the number the higher the priority.
-     *
-     * @return array
-     */
-    public static function getSubscribedEvents()
-    {
-        return [
-            'onPageInitialized' => ['onPageInitialized', 0],
-            'onPagesInitialized' => ['onPagesInitialized', 0],
-            'onPluginsInitialized' => ['onPluginsInitialized', 0],
-            'onTwigVariables' => ['onTwigVariables', 0],
-            'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0],
-        ];
-    }
-
-    /**
-     * Check whether this plugin should act
-     *
-     * Act only if 'prefill' is in the form name
-     *
-     * @return bool $result
-     *
-     */
-    public static function pluginAct()
-    {
-        $frontmatter = (array) self::$page->header();
-        $result = false;
-
-        if (isset($frontmatter['form']['name'])) {
-            if (array_search('prefill', explode('.', $frontmatter['form']['name'])) !== false) {
-                $result = true;
-            }
         }
 
-        return $result;
+        // Enable the main events we are interested in
+        $this->enable([
+            'onPageInitialized' => ['onPageInitialized', 0],
+            'onPagesInitialized' => ['onPagesInitialized', 0],
+            'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0],
+        ]);
     }
 
+    /**
+     * Store the page object for use in the static data-default@ call handler functions
+     */
     public function onPageInitialized($event)
     {
         self::$page = $event['page'];
     }
 
+    /**
+     * 
+     */
     public function onPagesInitialized()
     {
-        //if (!isset(self::$page)) {
-        //    return null;
-        //}
 
         if (property_exists($this->grav['page']->header(), 'prefill_data')) {
 
@@ -90,34 +86,12 @@ class FormPrefillerPlugin extends Plugin
 
             if (is_array($prefill_data)) {
                 foreach ($prefill_data as $file) {
-                    if (file_exists($this->getFilePath($file))) {
-                        $type = pathinfo($file)['extension'];
-                        $key = basename($file, '.' . $type);
-
-                        switch ($type) {
-                            case 'yaml':
-                                $data[$key] = Yaml::parse(file_get_contents($file));
-                                break;
-                            case 'json':
-                                $data[$key] = json_decode(file_get_contents($file), true);
-                                break;
-                        }
-                    }
+                        $key = basename($file, '.' . pathinfo($file)['extension']);
+                        $data[$key] = $this->getFileData($file);
                 }
             } else {
                 $file = $prefill_data;
-                if (file_exists($this->getFilePath($file))) {
-                    $type = pathinfo($file)['extension'];
-
-                    switch ($type) {
-                        case 'yaml':
-                            $data = Yaml::parse(file_get_contents($file));
-                            break;
-                        case 'json':
-                            $data = json_decode(file_get_contents($file), true);
-                            break;
-                    }
-                }
+                $data = $this->getFileData($file);
             }
             
             // Add data to page header/frontmatter
@@ -127,6 +101,9 @@ class FormPrefillerPlugin extends Plugin
             // Add extra Twig variables to be used via `getTwig` call
 
             // Add any URL parameters
+            // Usage: Regular (?q=123) or Grav style (/q:123) parameter
+            // Note: Mixing styles is allowed; in case of conflicts the Grav
+            // style parameter gets precedence over the regular style one
             $twig = Grav::instance()['twig'];
             $params = self::getUriParams();
             unset($twig->twig_vars['prefill_params']);
@@ -145,6 +122,59 @@ class FormPrefillerPlugin extends Plugin
             $twig->twig_vars['prefill_data'] = $prefill_data;
 
         }
+    }
+
+    /**
+     * Get file path
+     *
+     * @param string $filename
+     *
+     * @return array $data
+     * 
+     */
+    public function getFileData($file)
+    {
+        try {
+            $data = null;
+
+            if (file_exists($this->getFilePath($file))) {
+                $type = pathinfo($file)['extension'];
+
+                switch ($type) {
+                    case 'yaml':
+                        $data = Yaml::parse(file_get_contents($file));
+                        break;
+                    case 'json':
+                        $data = json_decode(file_get_contents($file), true);
+                        break;
+                }
+            }
+        } catch (\Exception $e) {
+            $msg = 'FormPrefillerPlugin: Error reading data from "' . $file . '": ' . $e->getMessage();
+            $this->grav['debugger']->addMessage($msg);
+            $this->grav['log']->error($msg);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Get file path
+     *
+     * @param string $filename
+     *
+     * @return string $path
+     *
+     */
+    public function getFilePath($filename)
+    {
+        if (strpos($filename, '://') !== false) {
+            $path = $this->grav['locator']->findResource($filename, true);
+        } else {
+            $path = $this->grav['page']->path() . DS . $filename;
+        }
+
+        return $path;
     }
 
     /**
@@ -169,38 +199,18 @@ class FormPrefillerPlugin extends Plugin
         $value = Utils::getDotNotation($frontmatter, $key);
 
         if ($value == null) {
+            $msg = 'FormPrefillerPlugin: Warning: the function getFrontmatter returned the default value: "';
+            if ($default == null) {
+                $msg .= 'null';
+            }
+            else {
+                $msg .= $default;
+            }
+            $msg .= '"';
+            Grav::instance()['debugger']->addMessage($msg);
             return $default;
         } else {
             return $value;
-        }
-    }
-    /**
-     * Return value of specified URL parameter
-     *
-     * To be used with the data-default@ form field option
-     * Supports regular (?q=123) and Grav style (/q:123) parameters
-     *
-     * @param string $key
-     *
-     * @return string|null $value
-     *
-     */
-    public static function getParameter($key, $default = null)
-    {
-        $params = self::getUriParams();
-
-        if (isset($params[$key])) {
-            $value = $params[$key];
-
-            if ($value == null) {
-                return $default;
-            } else {
-                return $value;
-            }
-
-        } else {
-
-            return null;
         }
     }
 
@@ -214,7 +224,7 @@ class FormPrefillerPlugin extends Plugin
      * @return string|null $value
      *
      */
-    public function getTwig($var, $default = null)
+    public static function getTwig($var, $default = null)
     {
         $twig_vars = (array) Grav::instance()['twig']->twig_vars;
         
@@ -229,6 +239,15 @@ class FormPrefillerPlugin extends Plugin
         }
 
         if ($value == null) {
+            $msg = 'FormPrefillerPlugin: Warning: the function getTwig returned the default value: "';
+            if ($default == null) {
+                $msg .= 'null';
+            }
+            else {
+                $msg .= $default;
+            }
+            $msg .= '"';
+            Grav::instance()['debugger']->addMessage($msg);
             return $default;
         } else {
             return $value;
@@ -244,7 +263,7 @@ class FormPrefillerPlugin extends Plugin
      * @return mixed $value
      *
      */
-    public function getTwigRender($template, $params = null, $default = null)
+    public static function getTwigRender($template, $params = null, $default = null)
     {
         if (!isset(self::$page)) {
             return null;
@@ -265,27 +284,118 @@ class FormPrefillerPlugin extends Plugin
             $vars = $matches[1];
 
             foreach ($vars as $key => $var) {
-
                 $val = Utils::getDotNotation($twig_vars, $var);
                 $param = str_replace($matches[0][$key], $val, $param);
             }
             $params[$p_key] = $param;
-
         }
-        // Render the template and return the result
-        $value = Grav::instance()['twig']->twig->render($template, array('params' => (array) $params));
+
+        try {
+            // Render the template and return the result
+            $value = Grav::instance()['twig']->twig->render($template, array('params' => (array) $params));
+        }
+        catch (\Exception $e) {
+            $msg = 'FormPrefillerPlugin: Template "' . basename($template) . '" can\'t be found';
+            Grav::instance()['debugger']->addMessage($msg);
+            Grav::instance()['log']->error($msg);
+            return null;
+        }
 
         // Check for a YAML type template (".yaml.twig")
         if (strpos(strtolower($template), '.yaml.twig') !== false) {
-            // Return parsed value (could be an array)
-            $value = YAML::parse($value);
+            // Try to parse YAML
+            try {
+                $value = YAML::parse($value);
+            }
+            catch (\Exception $e) {
+                $msg = 'FormPrefillerPlugin: YAML Parser error when reading data from: "' . basename($template) . '": ' . $e->getMessage();
+                Grav::instance()['debugger']->addMessage($msg);
+                Grav::instance()['log']->error($msg);
+                return null;
+            }
         }
 
         if ($value == null) {
+            $msg = 'FormPrefillerPlugin: Warning: the function getTwigRender returned default value: "';
+            if ($default == null) {
+                $msg .= 'null';
+            }
+            else {
+                $msg .= $default;
+            }
+            $msg .= '"';
+            Grav::instance()['debugger']->addMessage($msg);
             return $default;
         } else {
+            // Return parsed value (could be an array)
             return $value;
         }
+    }
+
+    /**
+     * Return value of specified URL parameter
+     *
+     * To be used with the data-default@ form field option
+     * Supports regular (?q=123) and Grav style (/q:123) parameters
+     *
+     * @param string $key
+     *
+     * @return string|null $value
+     *
+     */
+    public static function getURLParameter($key, $default = null)
+    {
+        $params = self::getUriParams();
+
+        if (isset($params[$key])) {
+            $value = $params[$key];
+
+            if ($value == null) {
+                $msg = 'FormPrefillerPlugin: Warning: the function getURLParameter returned the default value: "';
+                if ($default == null) {
+                    $msg .= 'null';
+                }
+                else {
+                    $msg .= $default;
+                }
+                $msg .= '"';
+                Grav::instance()['debugger']->addMessage($msg);
+                return $default;
+            } else {
+                return $value;
+            }
+
+        } else {
+            $msg = 'FormPrefillerPlugin: Warning: the function getURLParameter returned "null" since no matching URL parameter was found in the URL';
+            Grav::instance()['debugger']->addMessage($msg);
+            return null;
+        }
+    }
+
+    /**
+     * Deprecated starting from v1.1.3
+     */
+    public static function getParameter($key, $default = null)
+    {
+        return self::getURLParameter($key, $default);
+    }
+
+    /**
+     * Return URI parameters
+     *
+     * Supports regular (?q=123) and Grav style (/q:123) parameters
+     * If a parameter is specified twice the Grav style one gets precedence
+     *
+     * @return array
+     *
+     */
+    public static function getUriParams()
+    {
+
+        $grav_params = Grav::instance()['uri']->extractParams(Grav::instance()['uri'], ':')[1];
+        $query_params = Grav::instance()['uri']->query(null, true);
+
+        return array_merge($query_params, $grav_params);
     }
 
     /**
@@ -298,43 +408,6 @@ class FormPrefillerPlugin extends Plugin
         $this->grav['twig']->twig_paths[] = __DIR__ . '/templates';
         $this->grav['twig']->twig_paths[] = __DIR__ . '/templates/partials';
 
-    }
-
-    /**
-     * Get file path
-     *
-     * @param string $filename
-     *
-     * @return string $path
-     *
-     */
-    public function getFilePath($filename)
-    {
-        if (strpos($filename, '://') !== false) {
-            $path = $this->grav['locator']->findResource($filename, true);
-        } else {
-            $path = $this->grav['page']->path() . DS . $filename;
-        }
-
-        return $path;
-    }
-
-    /**
-     * Return URI parameters
-     *
-     * Supports regular (?q=123) and Grav style (/q:123) parameters
-     * If a parameter is specified twice the Grav style one gets precedence
-     *
-     * @return array
-     *
-     */
-    public function getUriParams()
-    {
-
-        $grav_params = Grav::instance()['uri']->extractParams(Grav::instance()['uri'], ':')[1];
-        $query_params = Grav::instance()['uri']->query(null, true);
-
-        return array_merge($query_params, $grav_params);
     }
 
 }

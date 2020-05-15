@@ -1,3 +1,15 @@
+# v1.1.3
+##  05/15/2020
+
+1. [](#improved)
+    * Improved stability by catching and logging errors
+    * Restored data-*@ functions to static
+    * Renamed the function "getParameter" to "getURLParameter" ("getParameter" still works for backwards compatibility)
+    * Updated to new devtools plugin standards
+    * Renamed "demo" to the more appropriate "example-prefill-form-page"
+    * Changed some examples so that they are clearer
+    * Updated documentation
+
 # v1.1.2
 ##  05/02/2020
 

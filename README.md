@@ -1,8 +1,14 @@
-<!-- $theme: gaia -->
-
 # Form Prefiller Plugin
 
 The **Form Prefiller** Plugin is for [Grav CMS](http://github.com/getgrav/grav). It's purpose is to make prefilling form fields easier.
+
+The purpose of the plugin is to prefill frontend form fields with default values by function calls using the `data-*@:` notation. For the full explanation see the [Using Function Calls (data-*@)](https://learn.getgrav.org/16/forms/blueprints/advanced-features#using-function-calls-data-at) in the Grav documentation.
+
+## Preamble
+
+Before starting to discover and use this plugin it's good to point out that there is a standard Grav way of prefilling or initialising a Grav Form with values.
+
+It uses the undocumented Twig function `setAllData` . A good working example was posted in the Grav Forum in 2017, see: [Twig in form yaml, dynamic input values](https://discourse.getgrav.org/t/twig-in-form-yaml-dynamic-input-values/4145)
 
 ## Installation and Configuration
 
@@ -29,11 +35,9 @@ enabled: true
 
 Simply edit the plugin options in the Admin panel, or, if you don't use the Admin panel, copy the `form-prefiller.yaml` default file to your `user/config/plugins` folder and use that copy to change configuration settings.
 
-## Demo
+## Testing
 
-Currently there's no online demo.
-
-To demo and test the plugin you need a preferably clean Grav installation including this plugin and then use the [example form page](https://raw.githubusercontent.com/bleutzinn/grav-plugin-form-prefiller/master/demo/default.md) in the `demo` folder.
+To test the plugin create a new page using the [example form page](https://raw.githubusercontent.com/bleutzinn/grav-plugin-form-prefiller/master/example-prefill-form-page/default.md) in the `example-prefill-form-page` folder.
 
 In order to experiment with language translations either the [Grav LangSwitcher Plugin](https://github.com/getgrav/grav-plugin-langswitcher) or the [Language Selector plugin with flags for Grav CMS](https://github.com/clemdesign/grav-plugin-language-selector) can be of help.
 
@@ -49,11 +53,11 @@ pages:
         process_twig: true
 ```
 
-2) Using Twig variables in field labels (and in the page content if desired) requires setting `process.twig: true` in the page frontmatter.
+2) To prevent the use of old cached values the page should be excluded from the Grav cache.
 
-3) To prevent the use of old cached values the page should be excluded from the Grav cache.
+3) Using Twig variables in field labels (and in the page content if desired) requires setting `process.twig: true` in the page frontmatter.
 
-To meet requirements 2 and 3 the form page frontmatter must include these lines:
+To meet these last two requirements the form page frontmatter must include these lines:
 
 ```
 cache_enable: false
@@ -64,15 +68,14 @@ process:
 
 ## Usage
 
-
 ### Available Function Calls (data-*@)
 
 These function calls make filling form fields with values from different sources easy:
 
-* `getParameter` - gets a URL parameter value in either regular (?q=123) or Grav format (/q:123). If a parameter is specified in both formats the Grav formatted one gets precedence.
-* `getFrontmatter` - gets the value of a variable in the page header or frontmatter.
-* `getTwig` - gets the value of a Twig variable.
-* `getTwigRender` - gets a result from processing parameters via a custom Twig template.
+* `getFrontmatter` - gets the value of a variable in the page header or frontmatter
+* `getTwig` - gets the value of a Twig variable
+* `getTwigRender` - gets a result from processing parameters via a custom Twig template
+* `getURLParameter` - gets a URL parameter value in either regular (?q=123) or Grav format (/q:123). If a parameter is specified in both formats the Grav formatted one gets precedence.
 
 
 ### Setting default return values
@@ -96,7 +99,7 @@ All can be used with the `getTwig` function by using these Dot notation prefixes
 
 ### Prefilling dynamic field properties
 
-The main purpose of the plugin is to prefill form fields with default values. For this Grav uses the `data-*@:` notation as the key, where `*` is the name of the dynamic field property you want to fill with the result of the function call.
+The purpose of the plugin is to prefill form fields with default values. For this Grav uses the `data-*@:` notation as the key, where `*` is the name of the dynamic field property you want to fill with the result of the function call.
 
 See the examples below how to prefill dynamic field properties.
 
@@ -107,10 +110,10 @@ For the full explanation see the [Using Function Calls (data-*@)](https://learn.
 
 **Prefill a field with a URL parameter**
 
-Given this URL: `https://example.com/search?query=%40` (regular format) or `https://example.com/search/query:%40` (Grav format), then the value of the `search` parameter ("@") can be prefilled using this function call:
+Given this URL: `https://example.com/search?query=something` (regular format) or `https://example.com/search/query:somethin` (Grav format), then the value of the `search` parameter can be prefilled using this function call:
 
 ```
-data-default@: ['\Grav\Plugin\FormPrefillerPlugin::getParameter', 'search']
+data-default@: ['\Grav\Plugin\FormPrefillerPlugin::getURLParameter', 'search']
 ```
 
 ---
@@ -169,7 +172,7 @@ For example setting this in the frontmatter:
 
 ```
 delivery_date: '{{ now|date_modify(''+2 day'')|date(''Y-m-d H:i'') }}'
-```   
+```
 
 and
 
@@ -178,8 +181,8 @@ data-default@:
     - '\Grav\Plugin\FormPrefillerPlugin::getFrontmatter'
     - delivery_date
 ```
-   
-in a form field will, at noon on January 1st, 2020 result in the prefilled field showing "2020-01-03 12:00".
+
+in a form field will result in the prefilled field showing the date and time two days from now.
 
 ---
 
@@ -230,14 +233,14 @@ prefill_data:
     - 'user://data/test.yaml'
 ```
 
-The content of the test file in `user/data` is for example:
+The content of the test file `user/data/test.yaml` is for example:
 
 ```
 var1: ef_val1
 var2:
     var2a: ef_val2a
     var2b: ef_val2b
-``` 
+```
 
 The plugin then replaces the file reference with the file data itself.
 
@@ -249,8 +252,14 @@ data-default@:
     - prefill_data.test.var2.var2b
 ```
 
-Multipe files can be read by specifying a list. For more information see the [Import Plugin](https://github.com/Perlkonig/grav-plugin-import) documentation. 
+Multipe files can be read by specifying a list. For more information see the [Import Plugin](https://github.com/Perlkonig/grav-plugin-import) documentation.
 
+### Troubleshooting
+
+The plugin tries to silently cope with errors but does log them. When form fields do not get prefilled take a look at the Grav log file ('logs/grav.log`). Also when the debugger is enabled error messages as well as warnings are displayed in the [Debug Bar](https://learn.getgrav.org/16/advanced/debugging#debug-bar).
+
+An example of an error log message is:   
+"FormPrefillerPlugin: Error reading data from "user://data/test.yaml": Indentation problem at line 4 (near " ef_val2a")"
 
 ## Credits
 

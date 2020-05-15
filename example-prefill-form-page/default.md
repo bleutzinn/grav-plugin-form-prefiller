@@ -1,6 +1,7 @@
 ---
 title: 'Prefiller test'
 template: form
+cache_enable: false
 process:
     twig: true
 room_nr: 1054b
@@ -72,12 +73,13 @@ form:
                 - '\Grav\Plugin\FormPrefillerPlugin::getTwigRender'
                 - pizzas.yaml.twig
         -
-            name: do_action
-            label: 'Action parameter value (if present in URL)'
+            name: get_url_parameter
+            label: 'Get URL ''category'' parameter value (add ''?category=laptops'' or ''/category:laptops''; Or ''?category:'' to see the default)'
             type: text
             data-default@:
-                - '\Grav\Plugin\FormPrefillerPlugin::getParameter'
-                - action
+                - '\Grav\Plugin\FormPrefillerPlugin::getURLParameter'
+                - category
+                - 'Not specified'
         -
             name: email
             label: 'Your email address (requires a logged in frontend user!)'
