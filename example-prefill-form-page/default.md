@@ -82,11 +82,12 @@ form:
                 - 'Not specified'
         -
             name: email
-            label: 'Your email address (requires a logged in frontend user!)'
+            label: 'Your email address (requires a logged in frontend user, otherwise the default is used)'
             type: text
             data-default@:
                 - '\Grav\Plugin\FormPrefillerPlugin::getFrontmatter'
                 - user_email
+                - bleutzinn@rwgc.nl
         -
             name: pizza
             data-label@:
