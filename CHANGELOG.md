@@ -1,3 +1,10 @@
+# v1.1.4
+##  05/17/2020
+
+1. [](#improved)
+    * All data-*@ functions now respond to page requests only
+    * Enriched Debug Bar messages with the requested variable name
+
 # v1.1.3
 ##  05/15/2020
 
