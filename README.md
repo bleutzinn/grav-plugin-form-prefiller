@@ -90,7 +90,7 @@ data-default@: ['\Grav\Plugin\FormPrefillerPlugin::getFrontmatter', 'the_answer_
 
 All frontmatter variables, any data loaded via `prefill_data` and any URL parameters are accessible as Twig variables.
 
-All can be used with the `getTwig` function by using these Dot notation prefixes:
+All can be used with the `getTwig` function by using these dot notation prefixes:
 
 * `prefill_frontmatter` for frontmatter variables
 * `prefill_data` for data loaded from an external file/*
@@ -256,10 +256,13 @@ Multipe files can be read by specifying a list. For more information see the [Im
 
 ### Troubleshooting
 
-The plugin tries to silently cope with errors but does log them. When form fields do not get prefilled take a look at the Grav log file ('logs/grav.log`). Also when the debugger is enabled error messages as well as warnings are displayed in the [Debug Bar](https://learn.getgrav.org/16/advanced/debugging#debug-bar).
+The plugin tries to silently cope with errors but does log them. When to your surprise form fields do not get prefilled take a look at the Grav log file ('logs/grav.log`). Also when the debugger is enabled error messages as well as warnings are displayed in the [Debug Bar](https://learn.getgrav.org/16/advanced/debugging#debug-bar).
 
 An example of an error log message is:   
 "FormPrefillerPlugin: Error reading data from "user://data/test.yaml": Indentation problem at line 4 (near " ef_val2a")"
+
+An example of a Debug Bar warning message is:   
+"FormPrefillerPlugin: Warning: the function getURLParameter returned "null" since the URL parameter "category" was not found"
 
 ## Credits
 
