@@ -191,7 +191,7 @@ class FormPrefillerPlugin extends Plugin
     public static function getFrontmatter($key, $default = null)
     {
         if (!isset(self::$page)) {
-            return null;
+            return;
         }
 
         $frontmatter = (array) self::$page->header();
@@ -199,14 +199,14 @@ class FormPrefillerPlugin extends Plugin
         $value = Utils::getDotNotation($frontmatter, $key);
 
         if ($value == null) {
-            $msg = 'FormPrefillerPlugin: Warning: the function getFrontmatter returned the default value: "';
+            $msg = 'FormPrefillerPlugin: Warning: the function getFrontmatter returned the default value "';
             if ($default == null) {
                 $msg .= 'null';
             }
             else {
                 $msg .= $default;
             }
-            $msg .= '"';
+            $msg .= '" for the frontmatter variable "' . $key . '"';
             Grav::instance()['debugger']->addMessage($msg);
             return $default;
         } else {
@@ -226,6 +226,10 @@ class FormPrefillerPlugin extends Plugin
      */
     public static function getTwig($var, $default = null)
     {
+        if (!isset(self::$page)) {
+            return;
+        }
+
         $twig_vars = (array) Grav::instance()['twig']->twig_vars;
         
         // Return requested value
@@ -239,14 +243,14 @@ class FormPrefillerPlugin extends Plugin
         }
 
         if ($value == null) {
-            $msg = 'FormPrefillerPlugin: Warning: the function getTwig returned the default value: "';
+            $msg = 'FormPrefillerPlugin: Warning: the function getTwig returned the default value "';
             if ($default == null) {
                 $msg .= 'null';
             }
             else {
                 $msg .= $default;
             }
-            $msg .= '"';
+            $msg .= '" for the Twig variable "' . $var . '"';
             Grav::instance()['debugger']->addMessage($msg);
             return $default;
         } else {
@@ -266,7 +270,7 @@ class FormPrefillerPlugin extends Plugin
     public static function getTwigRender($template, $params = null, $default = null)
     {
         if (!isset(self::$page)) {
-            return null;
+            return;
         }
 
         if (pathinfo($template, PATHINFO_EXTENSION) != 'twig') {
@@ -345,20 +349,24 @@ class FormPrefillerPlugin extends Plugin
      */
     public static function getURLParameter($key, $default = null)
     {
+        if (!isset(self::$page)) {
+            return;
+        }
+
         $params = self::getUriParams();
 
         if (isset($params[$key])) {
             $value = $params[$key];
 
             if ($value == null) {
-                $msg = 'FormPrefillerPlugin: Warning: the function getURLParameter returned the default value: "';
+                $msg = 'FormPrefillerPlugin: Warning: the function getURLParameter returned the default value "';
                 if ($default == null) {
                     $msg .= 'null';
                 }
                 else {
                     $msg .= $default;
                 }
-                $msg .= '"';
+                $msg .= '" for the URL parameter "' . $key . '"';
                 Grav::instance()['debugger']->addMessage($msg);
                 return $default;
             } else {
@@ -366,7 +374,7 @@ class FormPrefillerPlugin extends Plugin
             }
 
         } else {
-            $msg = 'FormPrefillerPlugin: Warning: the function getURLParameter returned "null" since no matching URL parameter was found in the URL';
+            $msg = 'FormPrefillerPlugin: Warning: the function getURLParameter returned "null" since the URL parameter "' . $key . '" was not found';
             Grav::instance()['debugger']->addMessage($msg);
             return null;
         }
