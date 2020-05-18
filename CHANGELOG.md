@@ -1,8 +1,14 @@
+# v1.1.5
+##  05/18/2020
+
+1. [](#bugfix)
+    * Fixed (included) missing 'vendor' directory
+
 # v1.1.4
 ##  05/17/2020
 
 1. [](#improved)
-    * All data-*@ functions now respond to page requests only
+    * Restricted response of all data-*@ functions to page requests only
     * Enriched Debug Bar messages with the requested variable name
 
 # v1.1.3
