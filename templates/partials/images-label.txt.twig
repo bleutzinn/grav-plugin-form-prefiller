@@ -1,0 +1,13 @@
+
+{% set attribute = 'twig_vars.' ~ params[0] %}
+
+{% set minNumberOfFiles = evaluate(attribute ~ '.minNumberOfFiles') %}
+{% set maxNumberOfFiles = evaluate(attribute ~ '.maxNumberOfFiles') %}
+
+{% if minNumberOfFiles is not empty and maxNumberOfFiles is not empty %}
+{{ 'PLUGIN_FORM_PREFILLER.DEMO_TEXTS.UPLOAD_MIN_MAX'|t(minNumberOfFiles, maxNumberOfFiles)|e }}
+{% elseif minNumberOfFiles is not empty %}
+{{ 'PLUGIN_FORM_PREFILLER.DEMO_TEXTS.UPLOAD_MIN'|t(minNumberOfFiles)|e }}
+{% elseif maxNumberOfFiles is not empty %}
+{{ 'PLUGIN_FORM_PREFILLER.DEMO_TEXTS.UPLOAD_MAX'|t(maxNumberOfFiles)|e }}
+{% endif %}

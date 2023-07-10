@@ -1,62 +1,149 @@
-# Translations thanks to DeepL (https://deepl.com)
+# Translations by ChatGPT and DeepL
 
-# Chinese (simplified)
-cn:
-  PLUGIN_FORM_PREFILLER:
-    DEMO_TEXTS:
-      FORM_HEADER: '预填表格'
-      PIZZA_LABEL: '选择你的比萨饼'
-
-# German
 de:
   PLUGIN_FORM_PREFILLER:
     DEMO_TEXTS:
-      FORM_HEADER: 'Vorgefülltes Formular'
+      FORM_HEADER: 'Vorausgefülltes Formular'
+      EMAIL_LABEL: 'E-Mail'
+      NAME_LABEL: 'Name'
       PIZZA_LABEL: 'Wählen Sie Ihre Pizza'
+      UPLOAD_MIN: 'Laden Sie mindestens %d Dateien hoch'
+      UPLOAD_MAX: 'Laden Sie maximal %d Dateien hoch'
+      UPLOAD_MIN_MAX: 'Laden Sie mindestens %d, aber nicht mehr als %d Dateien hoch'
+      CONTENT: 'Dies ist ein mehrsprachiges Formular, das ein erforderliches Datei-Upload-Feld und andere Funktionen zeigt'
+    VALIDATION:
+      ERRORS:
+        REQUIRED: 'Dieses Feld ist obligatorisch!'
+        UPLOAD_MIN:
+          SINGULAR: 'Bitte laden Sie mindestens eine Datei hoch'
+          PLURAL: 'Bitte laden Sie mindestens %d Dateien hoch'
+        UPLOAD_MAX:
+          SINGULAR: 'Bitte laden Sie nur eine Datei hoch'
+          PLURAL: 'Bitte laden Sie maximal %d Dateien hoch'
 
-# English
 en:
   PLUGIN_FORM_PREFILLER:
     DEMO_TEXTS:
+      MESSAGE: xxx                      # todo
       FORM_HEADER: 'Prefilled Form'
+      EMAIL_LABEL: 'Email'
+      NAME_LABEL: 'Name'
       PIZZA_LABEL: 'Select your pizza'
+      UPLOAD_MIN: 'Upload at least %d files'
+      UPLOAD_MAX: 'Upload no more than %d files'
+      UPLOAD_MIN_MAX: 'Upload at least %d but no more than %d files'
+      CONTENT: 'This is a multilanguage form showing a required file upload field and other features'
+    VALIDATION:
+      ERRORS:
+        REQUIRED: 'This field is mandatory!'
+        UPLOAD_MIN:
+          SINGULAR: 'Please upload at least one file'
+          PLURAL: 'Please upload at least %d files'
+        UPLOAD_MAX:
+          SINGULAR: 'Please upload just one file'
+          PLURAL: 'Please upload no more than %d files'
 
-# Spanish
 es:
   PLUGIN_FORM_PREFILLER:
     DEMO_TEXTS:
-      FORM_HEADER: 'Formulario pre-rellenado'
+      FORM_HEADER: 'Formulario prellenado'
+      EMAIL_LABEL: 'Correo electrónico'
+      NAME_LABEL: 'Nombre'
       PIZZA_LABEL: 'Selecciona tu pizza'
+      UPLOAD_MIN: 'Sube al menos %d archivos'
+      UPLOAD_MAX: 'Sube como máximo %d archivos'
+      UPLOAD_MIN_MAX: 'Sube al menos %d pero no más de %d archivos'
+      CONTENT: 'Este es un formulario multilingüe que muestra un campo de carga de archivos requerido y otras características'
+    VALIDATION:
+      ERRORS:
+        REQUIRED: '¡Este campo es obligatorio! Por favor, sube al menos un archivo'
+        UPLOAD_MIN:
+          SINGULAR: 'Por favor, sube al menos un archivo'
+          PLURAL: 'Por favor, sube al menos %d archivos'
+        UPLOAD_MAX:
+          SINGULAR: 'Por favor, sube solo un archivo'
+          PLURAL: 'Por favor, no subas más de %d archivos'
 
-# French
 fr:
   PLUGIN_FORM_PREFILLER:
     DEMO_TEXTS:
       FORM_HEADER: 'Formulaire pré-rempli'
+      EMAIL_LABEL: 'Email'
+      NAME_LABEL: 'Nom'
       PIZZA_LABEL: 'Sélectionnez votre pizza'
+      UPLOAD_MIN: 'Téléchargez au moins %d fichiers'
+      UPLOAD_MAX: 'Téléchargez au maximum %d fichiers'
+      UPLOAD_MIN_MAX: 'Téléchargez au moins %d mais pas plus de %d fichiers'
+      CONTENT: 'Ceci est un formulaire multilingue montrant un champ de téléchargement de fichiers requis et d''autres fonctionnalités'
+    VALIDATION:
+      ERRORS:
+        REQUIRED: 'Ce champ est obligatoire ! Veuillez télécharger au moins un fichier'
+        UPLOAD_MIN:
+          SINGULAR: 'Veuillez télécharger au moins un fichier'
+          PLURAL: 'Veuillez télécharger au moins %d fichiers'
+        UPLOAD_MAX:
+          SINGULAR: 'Veuillez télécharger seulement un fichier'
+          PLURAL: 'Veuillez ne pas télécharger plus de %d fichiers'
 
-# Italian
 it:
   PLUGIN_FORM_PREFILLER:
     DEMO_TEXTS:
       FORM_HEADER: 'Modulo precompilato'
-      PIZZA_LABEL: 'Scegli la tua pizza'
+      EMAIL_LABEL: 'Email'
+      NAME_LABEL: 'Nome'
+      PIZZA_LABEL: 'Seleziona la tua pizza'
+      UPLOAD_MIN: 'Carica almeno %d file'
+      UPLOAD_MAX: 'Carica al massimo %d file'
+      UPLOAD_MIN_MAX: 'Carica almeno %d ma non più di %d file'
+      CONTENT: 'Questo è un modulo multilingue che mostra un campo di caricamento file obbligatorio e altre funzionalità'
+    VALIDATION:
+      ERRORS:
+        REQUIRED: 'Questo campo è obbligatorio! Carica almeno un file'
+        UPLOAD_MIN:
+          SINGULAR: 'Carica almeno un file'
+          PLURAL: 'Carica almeno %d file'
+        UPLOAD_MAX:
+          SINGULAR: 'Carica solo un file'
+          PLURAL: 'Carica non più di %d file'
 
-# Dutch
 nl:
   PLUGIN_FORM_PREFILLER:
     DEMO_TEXTS:
       FORM_HEADER: 'Vooraf ingevuld formulier'
+      EMAIL_LABEL: 'E-mail'
+      NAME_LABEL: 'Naam'
       PIZZA_LABEL: 'Selecteer uw pizza'
+      UPLOAD_MIN: 'Upload minimaal %d bestanden'
+      UPLOAD_MAX: 'Upload maximaal %d bestanden'
+      UPLOAD_MIN_MAX: 'Upload minimaal %d, maar niet meer dan %d bestanden'
+      CONTENT: 'Dit is een meertalig formulier dat een verplicht veld voor het uploaden van bestanden en andere functies toont'
+    VALIDATION:
+      ERRORS:
+        REQUIRED: 'Dit veld is verplicht!'
+        UPLOAD_MIN:
+          SINGULAR: 'Upload minimaal één bestand'
+          PLURAL: 'Upload minimaal %d bestanden'
+        UPLOAD_MAX:
+          SINGULAR: 'Upload slechts één bestand'
+          PLURAL: 'Upload maximaal %d bestanden'
 
 pt:
   PLUGIN_FORM_PREFILLER:
     DEMO_TEXTS:
-      FORM_HEADER: 'Formulário pré-preenchido'
-      PIZZA_LABEL: 'Seleccione a sua pizza'
-
-ru:
-  PLUGIN_FORM_PREFILLER:
-    DEMO_TEXTS:
-      FORM_HEADER: 'Предварительно заполненная форма'
-      PIZZA_LABEL: 'Выберите пиццу'
+      FORM_HEADER: 'Formulário preenchido'
+      EMAIL_LABEL: 'Email'
+      NAME_LABEL: 'Nome'
+      PIZZA_LABEL: 'Selecione sua pizza'
+      UPLOAD_MIN: 'Envie pelo menos %d arquivos'
+      UPLOAD_MAX: 'Envie no máximo %d arquivos'
+      UPLOAD_MIN_MAX: 'Envie pelo menos %d, mas não mais do que %d arquivos'
+      CONTENT: 'Este é um formulário multilíngue que exibe um campo obrigatório de envio de arquivo e outras funcionalidades'
+    VALIDATION:
+      ERRORS:
+        REQUIRED: 'Este campo é obrigatório!'
+        UPLOAD_MIN:
+          SINGULAR: 'Por favor, envie pelo menos um arquivo'
+          PLURAL: 'Por favor, envie pelo menos %d arquivos'
+        UPLOAD_MAX:
+          SINGULAR: 'Por favor, envie apenas um arquivo'
+          PLURAL: 'Por favor, não envie mais do que %d arquivos'

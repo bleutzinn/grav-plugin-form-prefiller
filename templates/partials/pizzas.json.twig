@@ -8,4 +8,4 @@
 } %}
 
 {# To return anything other then a string apply the filter yaml_encode #}
-{{ pizzas|yaml_encode|raw }}
+{{ pizzas|json_encode|raw }}
