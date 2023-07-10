@@ -54,7 +54,7 @@ class FormPrefillerPlugin extends Plugin
      * getFileFields
      * Get form file fields
      *
-     * @return array|null
+     * @return mixed
      */
     public function getFileFields(): mixed
     {
@@ -337,6 +337,12 @@ class FormPrefillerPlugin extends Plugin
         $this->grav['twig']->twig_paths[] = __DIR__ . '/templates/partials';
     }
 
+    /**
+     * translateJs
+     * Convert the language file into a Javascript array and send it to the browser
+     *
+     * @return void
+     */
     public function translateJs()
     {
         // Create a new response object
@@ -349,6 +355,8 @@ class FormPrefillerPlugin extends Plugin
         $response = new Response(200, ['Content-Type' => 'application/javascript'], $js);
         $this->grav->close($response);
     }
+
+    /******************* Static Functions to handle data-*@ calls ***********************/
 
     /**
      * getFrontmatter
@@ -395,7 +403,7 @@ class FormPrefillerPlugin extends Plugin
      *
      * @param string $var
      *
-     * @return string|null $value
+     * @return mixed $value
      *
      */
     public static function getTwig(string $var, string $default = null): mixed
@@ -467,6 +475,7 @@ class FormPrefillerPlugin extends Plugin
             $params[$p_key] = $param;
         }
 
+        // Removed the try-catch; does it have any advantage over the Grav default error handling?
         // try {
         // Render the template and return the result
         $value = Grav::instance()['twig']->twig->render($template, ['params' => $params, 'twig_vars' => $twig_vars]);
@@ -531,7 +540,7 @@ class FormPrefillerPlugin extends Plugin
      *
      * @param string $key
      *
-     * @return string|null $value
+     * @return mixed $value
      *
      */
     public static function getURLParameter(string $key, string $default = null): mixed
@@ -565,8 +574,6 @@ class FormPrefillerPlugin extends Plugin
         }
     }
 
-    /**
-     */
     /**
      * getParameter
      * Deprecated starting from v1.1.3
