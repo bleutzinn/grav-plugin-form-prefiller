@@ -1,14 +1,16 @@
 # Form Prefiller Plugin
 
-The **Form Prefiller** Plugin is for [Grav CMS](http://github.com/getgrav/grav). It's purpose is to make prefilling form fields easier.
+The **Form Prefiller** Plugin is for [Grav CMS](http://github.com/getgrav/grav). It's purpose is to make prefilling form fields easier. As a kind of bonus the plugin uses a workaround for the Grav Form Plugin issue regarding failing to submit a form when a file field has the attribute `required`.
 
-The purpose of the plugin is to prefill frontend form fields with default values by function calls using the `data-*@:` notation. For the full explanation see the [Using Function Calls (data-*@)](https://learn.getgrav.org/16/forms/blueprints/advanced-features#using-function-calls-data-at) in the Grav documentation.
+The main goal of this plugin is to prefill frontend form fields with default values by function calls using the `data-*@:` notation. For the full explanation see [Using Function Calls (data-*@)](https://learn.getgrav.org/16/forms/blueprints/advanced-features#using-function-calls-data-at) in the Grav documentation.
+
+A second benefit is being able to create a form in which uploading of one or more files is mandatory. Instead of setting the attribute `required` to `true`, which prevents the form to be submitted at all, some alternative attributes are introduced. [Read more](#issue106-workaround)
 
 ## Preamble
 
-Before starting to discover and use this plugin it's good to point out that there is a standard Grav way of prefilling or initialising a Grav Form with values.
+Before starting to discover and use this plugin it's good to point out that there is a standard Grav way of prefilling or initialising a Grav Form with default values.
 
-It uses the undocumented Twig function `setAllData` . A good working example was posted in the Grav Forum in 2017, see: [Twig in form yaml, dynamic input values](https://discourse.getgrav.org/t/twig-in-form-yaml-dynamic-input-values/4145)
+It uses the undocumented Twig function `setAllData`. A good working example was posted in the Grav Forum by Andy Miller in 2017, see: [Twig in form yaml, dynamic input values](https://discourse.getgrav.org/t/twig-in-form-yaml-dynamic-input-values/4145)
 
 ## Installation and Configuration
 
@@ -39,13 +41,19 @@ Simply edit the plugin options in the Admin panel, or, if you don't use the Admi
 
 To test the plugin create a new page using the [example form page](https://raw.githubusercontent.com/bleutzinn/grav-plugin-form-prefiller/master/example-prefill-form-page/default.md) in the `example-prefill-form-page` folder.
 
-In order to experiment with language translations either the [Grav LangSwitcher Plugin](https://github.com/getgrav/grav-plugin-langswitcher) or the [Language Selector plugin with flags for Grav CMS](https://github.com/clemdesign/grav-plugin-language-selector) can be of help.
+In order to experiment with language translations the [Grav LangSwitcher Plugin](https://github.com/getgrav/grav-plugin-langswitcher) can be of help.
 
 ## Required system and page configuration
 
 To get the most out of this plugin a couple of system and page configuration settings are required.
 
-1) The processing of Twig in the page frontmatter should be enabled. To do this either set `Process frontmatter Twig` to `On` in the Content section of the System Configuration in the Admin Plugin or enable it in the `user/config/system.yaml` configuration file:
+1. To prevent the use of old cached values the page should be excluded from the Grav cache.
+
+```
+cache_enable: false
+```
+
+1. The processing of Twig in the page frontmatter should be enabled. To do this either set `Process frontmatter Twig` to `On` in the Content section of the System Configuration in the Admin Plugin or enable it in the `user/config/system.yaml` configuration file:
 
 ```
 pages:
@@ -53,20 +61,15 @@ pages:
         process_twig: true
 ```
 
-2) To prevent the use of old cached values the page should be excluded from the Grav cache.
-
-3) Using Twig variables in field labels (and in the page content if desired) requires setting `process.twig: true` in the page frontmatter.
-
-To meet these last two requirements the form page frontmatter must include these lines:
+1. Using Twig variables in field labels (and in the page content if desired) requires setting `process.twig: true` in the page frontmatter:
 
 ```
-cache_enable: false
 process:
     twig: true
 ```
 
 
-## Usage
+## Usage - Prefilling fields
 
 ### Available Function Calls (data-*@)
 
@@ -162,6 +165,8 @@ data-label@:
     - PLUGIN_FORM_PREFILLER.DEMO_TEXTS.PIZZA_LABEL
 ```
 
+
+
 ---
 
 **Using Twig functions and filters**
@@ -254,7 +259,28 @@ data-default@:
 
 Multipe files can be read by specifying a list. For more information see the [Import Plugin](https://github.com/Perlkonig/grav-plugin-import) documentation.
 
-### Troubleshooting
+<a name="issue106-workaround"></a>
+## Usage - Mandatory or required upload
+
+Due to how the Form Plugin file field is implemented in HTML and Javascript the attribute `required: true` on a file field causes a Javascript error which in turn prevents submitting the form. Over the years this problem has been brought to attention through these issues:
+- Form Pugin:
+    - [#106](https://github.com/getgrav/grav-plugin-form/issues/106)
+    - [#116](https://github.com/getgrav/grav-plugin-form/issues/116)
+    - [#418](https://github.com/getgrav/grav-plugin-form/issues/418)
+    - [#499](https://github.com/getgrav/grav-plugin-form/issues/499)
+- Grav Core:
+    - [#1217](https://github.com/getgrav/grav/issues/1217)
+- Admin Plugin:
+    - [#887](https://github.com/getgrav/grav-plugin-admin/issues/887)
+
+This plugin creates a workaround by introducing an alternative attribute: `restrictions`. To set a file field to mandatory or required use:
+```
+restrictions:
+    required: true
+```
+To be amended ...
+
+## Troubleshooting
 
 The plugin tries to silently cope with errors but does log them. When to your surprise form fields do not get prefilled take a look at the Grav log file ('logs/grav.log`). Also when the debugger is enabled error messages as well as warnings are displayed in the [Debug Bar](https://learn.getgrav.org/16/advanced/debugging#debug-bar).
 
