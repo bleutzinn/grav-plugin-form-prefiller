@@ -504,11 +504,11 @@ class FormPrefillerPlugin extends Plugin
 
         // Check for a JSON type template (".json.twig")
         if (strpos(strtolower($template), '.json.twig') !== false) {
-            // Try to parse YAML
+            // Try to decode the JSON string
             try {
                 $value = json_decode($value);
             } catch (\Exception $e) {
-                $msg = 'FormPrefillerPlugin: YAML Parser error when reading data from: "' . basename($template) . '": ' . $e->getMessage();
+                $msg = 'FormPrefillerPlugin: JSON decode error when reading data from: "' . basename($template) . '": ' . $e->getMessage();
                 Grav::instance()['debugger']->addMessage($msg);
                 Grav::instance()['log']->error($msg);
                 return null;
