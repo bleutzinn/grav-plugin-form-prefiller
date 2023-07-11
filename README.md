@@ -6,6 +6,10 @@ The main goal of this plugin is to prefill frontend form fields with default val
 
 A second benefit is being able to create a form in which uploading of one or more files is mandatory. Instead of setting the attribute `required` to `true`, which prevents the form to be submitted at all, some alternative attributes are introduced. [Read more](#issue106-workaround)
 
+## Multilanguage support
+
+The plugin comes with a language file with translations in Dutch, English, French, German, Italian, Portugese and Spanish. The examples show how to translate field labels in your form.
+
 ## Preamble
 
 Before starting to discover and use this plugin it's good to point out that there is a standard Grav way of prefilling or initialising a Grav Form with default values.
@@ -208,7 +212,7 @@ To demonstrate this the plugin comes with an example template in it's `templates
 } %}
 
 {# To return anything other then a string apply the filter yaml_encode #}
-{{ pizzas|yaml_encode }}
+{{ pizzas|yaml_encode|raw }}
 ```
 
 In order to get the list as an array instead of a string make sure to apply the `yaml_encode` filter in the template.
@@ -260,9 +264,27 @@ data-default@:
 Multipe files can be read by specifying a list. For more information see the [Import Plugin](https://github.com/Perlkonig/grav-plugin-import) documentation.
 
 <a name="issue106-workaround"></a>
-## Usage - Mandatory or required upload
+## Usage - Mandatory or required file upload workaround
 
-Due to how the Form Plugin file field is implemented in HTML and Javascript the attribute `required: true` on a file field causes a Javascript error which in turn prevents submitting the form. Over the years this problem has been brought to attention through these issues:
+This plugin creates a workaround by introducing an alternative attribute: `restrictions`. To set a file field to mandatory or required use:
+```
+restrictions:
+    required: true
+```
+
+Besides `restrictions.required` there are two other attributes:
+- `restrictions.minNumberOfFiles` to set the minimum number of files which must be uploaded before submitting the form
+- `restrictions.maxNumberOfFiles` to set an upper limit on the number of uploaded files
+
+Validation on the client side is performed by Javascript.
+
+Customizing the file field label text can be done by modifying the Twig template `user\plugins\form-prefiller\templates\partials\images-label.txt.twig`.
+
+Validation failed (error) messages are multilanguage aware but the logic is not (yet) done in Twig but instead implemented in the Javascript code in `user\plugins\form-prefiller\assets\validate-file-field-required.js`.
+
+### Background on the `validate.required` on file fields bug
+
+Due to how the Form Plugin file field is implemented in HTML and Javascript the attribute `required: true` on a file field causes a Javascript error which in turn prevents submitting the form. Over the years this problem has been brought to attention through several issues on GitHub:
 - Form Pugin:
     - [#106](https://github.com/getgrav/grav-plugin-form/issues/106)
     - [#116](https://github.com/getgrav/grav-plugin-form/issues/116)
@@ -273,12 +295,14 @@ Due to how the Form Plugin file field is implemented in HTML and Javascript the 
 - Admin Plugin:
     - [#887](https://github.com/getgrav/grav-plugin-admin/issues/887)
 
-This plugin creates a workaround by introducing an alternative attribute: `restrictions`. To set a file field to mandatory or required use:
-```
-restrictions:
-    required: true
-```
-To be amended ...
+The cause is explained in a [comment on issue #116](https://github.com/getgrav/grav-plugin-form/issues/116#issuecomment-291064847).
+
+The workaround consists of:
+1. handling the settings of the new attributes `restrictions.required`, `restrictions.minNumberOfFiles` and `restrictions.maxNumberOfFiles`
+1. inserts the 'field required' visual marker on file fields which have `restrictions.required: true` (the default red asterisk symbol)
+1. client side validation upon submitting the form
+
+> Note: make sure not to use `validate.required: true` in the form definition as the plugin does not remove the `required` atrribute from the HTML file input field.
 
 ## Troubleshooting
 
