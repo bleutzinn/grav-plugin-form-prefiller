@@ -1,5 +1,5 @@
 # v2.0.0
-##  07/11/2023
+##  07/12/2023
 
 1. [](#new)
     * Added a workaround to get a working form with one or more required file fields
@@ -8,7 +8,7 @@
     * Added form fields attributes to the `twig_vars` variable
 1. [](#bugfix)
     * Fixed a bug which caused the variables `twig_vars.prefill_params` and `twig_vars.prefill_frontmatter` to be available only when the frontmatter variable `prefill_data` was set
-    * Applied the `raw` Twig filter to the YAML output in `pizzas.yaml.twig`
+    * Applied the Twig filter `raw` to the YAML output in `pizzas.yaml.twig`
 
 # v1.1.5
 ##  05/18/2020
