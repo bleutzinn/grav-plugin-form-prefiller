@@ -57,19 +57,19 @@ To get the most out of this plugin a couple of system and page configuration set
 cache_enable: false
 ```
 
-1. The processing of Twig in the page frontmatter should be enabled. To do this either set `Process frontmatter Twig` to `On` in the Content section of the System Configuration in the Admin Plugin or enable it in the `user/config/system.yaml` configuration file:
-
-```
-pages:
-    frontmatter:
-        process_twig: true
-```
-
 1. Using Twig variables in field labels (and in the page content if desired) requires setting `process.twig: true` in the page frontmatter:
 
 ```
 process:
     twig: true
+```
+
+1. If processing of Twig on the page frontmatter should be enabled, set `pages.frontmatter.process_twig: true` in the page frontmatter:
+
+```
+pages:
+    frontmatter:
+        process_twig: true
 ```
 
 
