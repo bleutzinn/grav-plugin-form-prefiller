@@ -1,4 +1,14 @@
 // Form Prefiller Plugin - translations
 
-const translations = {{ lang|raw }};
+gravFormPrefillerPlugin = (function () {
 
+  function getTranslations() {
+    const translations = {{ lang|raw }};
+
+    return translations;
+  }
+
+  return {
+    getTranslations: getTranslations,
+  };
+})();
